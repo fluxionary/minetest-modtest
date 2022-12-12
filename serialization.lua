@@ -45,7 +45,7 @@ modtest.serialization = {
 			if 32 <= b and b <= 126 then
 				local function nothing() end
 				nothing()
-				-- do nothing
+				-- TODO: do nothing better. we're trying to get around luacheck
 			elseif forward_translation[c] then
 				c = forward_translation[c]
 			else
