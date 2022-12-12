@@ -1,7 +1,6 @@
-
 MetaDataRef = modtest.util.make_class()
 
-function MetaDataRef:__init()
+function MetaDataRef:_init()
 	self.__table = {}
 end
 
@@ -51,7 +50,7 @@ function MetaDataRef:get_float(key)
 end
 
 function MetaDataRef:to_table()
-	local t = {fields = {}}
+	local t = { fields = {} }
 	for key, value in pairs(self.__table) do
 		t.fields[key] = value
 	end

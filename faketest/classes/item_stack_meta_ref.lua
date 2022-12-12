@@ -1,4 +1,3 @@
-
 ItemStackMetaRef = modtest.util.make_class(MetaDataRef)
 
 function ItemStackMetaRef:set_tool_capabilities(tool_caps)
@@ -25,9 +24,9 @@ function ItemStackMetaRef:_serialize()
 	return modtest.serialization.serialize_json_string_if_needed(table.concat(parts, ""))
 end
 
-local DESERIALIZE_START_STR = "\x01"
-local DESERIALIZE_KV_DELIM_STR = "\x02"
-local DESERIALIZE_PAIR_DELIM_STR = "\x03"
-function ItemStack:_deserialize()
-
+--local DESERIALIZE_START_STR = "\x01"
+--local DESERIALIZE_KV_DELIM_STR = "\x02"
+--local DESERIALIZE_PAIR_DELIM_STR = "\x03"
+function ItemStackMetaRef:_deserialize()
+	error("TODO: needs implemented")
 end

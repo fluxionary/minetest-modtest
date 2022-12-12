@@ -1,10 +1,9 @@
-
 NodeMetaRef = modtest.util.make_class(MetaDataRef)
 
-function NodeMetaRef:__init(pos)
+function NodeMetaRef:_init(pos)
 	MetaDataRef.__init(self)
 	self.__pos = pos
-	self.__inventory = InvRef({type="node", pos=pos})
+	self.__inventory = InvRef({ type = "node", pos = pos })
 	self.__private = {}
 end
 

@@ -24,17 +24,15 @@ end
 --[[
 thing is itemstack, itemstring, table, or nil
 ]]
-function ItemStack:__init(thing)
+function ItemStack:_init(thing)
 	self.__meta = ItemStackMetaRef()
 
 	if thing == nil then
 		self.__name = ""
 		self.__count = 0
 		self.__wear = 0
-
 	elseif type(thing) == "string" then
 		self.__name, self.__count, self.__wear = parse_itemstring(thing)
-
 	elseif type(thing) == "table" then
 		if thing.__name and thing.__count and thing.__wear then
 			self.__name = thing.__name
@@ -69,7 +67,7 @@ function ItemStack:get_count()
 end
 
 function ItemStack:set_count(count)
-	if count < 0 or count >= (2^16) or count ~= math.round(count) then
+	if count < 0 or count >= (2 ^ 16) or count ~= math.round(count) then
 		error("ItemStack: invalid count")
 	end
 	self.__count = count
@@ -80,7 +78,7 @@ function ItemStack:get_wear()
 end
 
 function ItemStack:set_wear(wear)
-	if wear < 0 or wear >= (2^16) or wear ~= math.round(wear) then
+	if wear < 0 or wear >= (2 ^ 16) or wear ~= math.round(wear) then
 		error("ItemStack: invalid wear")
 	end
 	self.__wear = wear
@@ -97,7 +95,7 @@ end
 
 function ItemStack:get_short_description()
 	local def = core.registered_items[self.__name] or {}
-	local sd = 	self.__meta.short_description or def.short_description or self:get_description()
+	local sd = self.__meta.short_description or def.short_description or self:get_description()
 	return sd:match("^([^\n]+)")
 end
 
@@ -112,7 +110,6 @@ function ItemStack:replace(item)
 	if type(item) == "string" then
 		self.__name, self.__count, self.__wear = parse_itemstring(item)
 		self.__meta.from_table()
-
 	elseif type(item) == "table" then
 		if item.__name and item.__count and item.__wear then
 			self.__name = item.__name

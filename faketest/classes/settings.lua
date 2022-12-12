@@ -13,10 +13,9 @@ end
 
 Settings = modtest.util.make_class()
 
-function Settings:__init(conf_file)
+function Settings:_init(conf_file)
 	self.__table = load_settings(conf_file)
 end
-
 
 function Settings:get(key)
 	return self.__table[key]
@@ -82,4 +81,3 @@ function Settings:to_table()
 	end
 	return t
 end
-
