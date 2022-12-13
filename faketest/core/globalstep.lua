@@ -1,4 +1,4 @@
-function modtest.core.trigger_globalstep(dtime)
+function modtest.api.trigger_globalstep(dtime)
 	-- disconnect timed out clients
 	-- update active blocks, run callbacks
 	-- run node timers

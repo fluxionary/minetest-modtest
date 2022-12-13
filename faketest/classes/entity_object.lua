@@ -1,1 +1,1 @@
-EntityObject = modtest.util.make_class(ActiveObject)
+EntityObject = modtest.util.class1(ActiveObject)

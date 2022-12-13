@@ -47,9 +47,9 @@ local function load_mod(mod_name, all_modpaths)
 		error(("could not find %q?"):format(init_file))
 	end
 	modtest.log({ "debug", 1 }, "loading mod %q from %q", mod_name, modpath)
-	modtest.core.set_current_modname(mod_name)
+	modtest.api.set_current_modname(mod_name)
 	dofile(init_file)
-	modtest.core.set_current_modname(nil)
+	modtest.api.set_current_modname(nil)
 end
 
 local function get_mod_paths(mod_folder, mod_paths, is_root)
@@ -135,7 +135,7 @@ end
 
 function modtest.load_mods()
 	local all_modpaths = get_all_mod_paths()
-	modtest.core.set_all_modpaths(all_modpaths)
+	modtest.api.set_all_modpaths(all_modpaths)
 
 	local to_test_name = get_mod_name(modtest.args.mod_to_test)
 

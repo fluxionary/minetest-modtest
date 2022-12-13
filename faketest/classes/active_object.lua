@@ -1,1 +1,1 @@
-ActiveObject = modtest.util.make_class()
+ActiveObject = modtest.util.class1()

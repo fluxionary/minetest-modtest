@@ -1,1 +1,1 @@
-StorageRef = modtest.util.make_class(MetaDataRef)
+StorageRef = modtest.util.class1(MetaDataRef)

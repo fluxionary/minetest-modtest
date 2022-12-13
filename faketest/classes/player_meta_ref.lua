@@ -1,1 +1,1 @@
-PlayerMetaRef = modtest.util.make_class(MetaDataRef)
+PlayerMetaRef = modtest.util.class1(MetaDataRef)

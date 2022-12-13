@@ -1,4 +1,4 @@
-ItemStack = modtest.util.make_class()
+ItemStack = modtest.util.class1()
 
 local function parse_itemstring(itemstring)
 	local name, count, wear

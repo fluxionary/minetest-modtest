@@ -1,1 +1,1 @@
-Player = modtest.util.make_class(ActiveObject)
+Player = modtest.util.class1(ActiveObject)

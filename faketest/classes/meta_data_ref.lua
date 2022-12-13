@@ -1,4 +1,4 @@
-MetaDataRef = modtest.util.make_class()
+MetaDataRef = modtest.util.class1()
 
 function MetaDataRef:_init()
 	self.__table = {}

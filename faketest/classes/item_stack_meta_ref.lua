@@ -1,4 +1,4 @@
-ItemStackMetaRef = modtest.util.make_class(MetaDataRef)
+ItemStackMetaRef = modtest.util.class1(MetaDataRef)
 
 function ItemStackMetaRef:set_tool_capabilities(tool_caps)
 	error("this can't use core.serialize, i don't think")

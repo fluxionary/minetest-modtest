@@ -1,4 +1,4 @@
-NodeMetaRef = modtest.util.make_class(MetaDataRef)
+NodeMetaRef = modtest.util.class1(MetaDataRef)
 
 function NodeMetaRef:_init(pos)
 	MetaDataRef.__init(self)

@@ -5,8 +5,35 @@ local m_min = math.min
 
 local util = {}
 
-function util.parse_config_line(line)
-	return line:match("^%s*([^%s=]+)%s*=%s*(.-)%s*$")
+local settingtypes_patterns = {
+	"^(%S+)%s+%([^%)]*%)%s+int%s+(%S+)",
+	"^(%S+)%s+%([^%)]*%)%s+string%s*(.*)$",
+	"^(%S+)%s+%([^%)]*%)%s+bool%s+(%S+)",
+	"^(%S+)%s+%([^%)]*%)%s+float%s+(%S+)",
+	"^(%S+)%s+%([^%)]*%)%s+enum%s+(%S+)",
+	"^(%S+)%s+%([^%)]*%)%s+path%s*(%S*)$",
+	"^(%S+)%s+%([^%)]*%)%s+filepath%s*(%S*)$",
+	"^(%S+)%s+%([^%)]*%)%s+key%s+(%S+)",
+	"^(%S+)%s+%([^%)]*%)%s+flags%s+(%S+)",
+	"^(%S+)%s+%([^%)]*%)%s+noise_params_2d%s+(.*)$",
+	"^(%S+)%s+%([^%)]*%)%s+noise_params_3d%s+(.*)$",
+	"^(%S+)%s+%([^%)]*%)%s+v3f%s+(.*)$",
+}
+
+function util.parse_settingtypes_line(line)
+	local sps = settingtypes_patterns
+	for i = 1, #sps do
+		local name, default = line:match(sps[i])
+		if name and default then
+			return name, default
+		end
+	end
+end
+
+function util.set_all(t1, t2)
+	for k, v in pairs(t2) do
+		t1[k] = v
+	end
 end
 
 function util.concat_path(...)
@@ -82,24 +109,20 @@ function util.iterate_tree(basepath)
 	end
 end
 
-function util.make_class(super)
+function futil.class1(super)
 	local class = {}
 	class.__index = class
 
-	local metatable = {}
-	if super then
-		metatable.__index = super
-	end
-
-	function metatable:__call(...)
-		local obj = setmetatable({}, class)
-		if obj._init then
-			obj:_init(...)
-		end
-		return obj
-	end
-
-	setmetatable(class, metatable)
+	setmetatable(class, {
+		__index = super,
+		__call = function(class, ...)
+			local obj = setmetatable({}, class)
+			if obj._init then
+				obj:_init(...)
+			end
+			return obj
+		end,
+	})
 
 	return class
 end
@@ -137,6 +160,10 @@ end
 
 function util.bound(min, v, max)
 	return m_max(min, m_min(v, max))
+end
+
+function util.in_bounds(min, v, max)
+	return min <= v and v <= max
 end
 
 modtest.util = util

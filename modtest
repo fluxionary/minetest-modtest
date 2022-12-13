@@ -42,6 +42,7 @@ function modtest.loadfile(...)
 end
 
 modtest.dofile("util")
+modtest.dofile("deque")
 modtest.dofile("parse_args")
 
 modtest.dofile("faketest", "init")

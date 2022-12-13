@@ -1,1 +1,1 @@
-InvRef = modtest.util.make_class()
+InvRef = modtest.util.class1()

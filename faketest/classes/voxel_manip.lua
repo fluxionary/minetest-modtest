@@ -1,6 +1,11 @@
-VoxelManip = modtest.util.make_class()
+VoxelManip = modtest.util.class1()
 
 function VoxelManip:_init(p1, p2)
+	self._p1 = p1
+	self._p2 = p2
+end
+
+function VoxelManip:read_from_map(p1, p2)
 	self._p1 = p1
 	self._p2 = p2
 end
