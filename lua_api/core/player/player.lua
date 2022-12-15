@@ -11,7 +11,24 @@ function modtest.api.create_player(name, password)
 		error(f("player %q already exists, this is likely an error", name))
 	end
 	-- TODO check blank passwords if applicable
-	modtest.api.registered_players[name] = { password = password }
+	local static_spawnpoint = core.settings:get("static_spawnpoint")
+	if static_spawnpoint then
+		static_spawnpoint = core.string_to_pos(static_spawnpoint)
+	else
+		static_spawnpoint = vector.zero()
+	end
+
+	modtest.api.registered_players[name] = {
+		password = password,
+		meta = PlayerMetaRef(),
+		inventory = InvRef({ type = "player", name = name }),
+		privileges = core.string_to_privs(core.settings:get("default_privs")),
+		pitch = 0,
+		yaw = 0,
+		pos = static_spawnpoint,
+		hp = 20, -- TODO: this really isn't a setting or anything?!
+		breath = 10, -- same here
+	}
 end
 
 function modtest.api.try_join_player(name, password, connection_info)
@@ -26,20 +43,22 @@ function modtest.api.try_join_player(name, password, connection_info)
 		end
 	end
 
-	local auth_info = modtest.api.registered_players[name]
+	local persistent_data = modtest.api.registered_players[name]
 
-	if not auth_info then
+	if not persistent_data then
 		return false, "unknown player"
 	end
 
-	if auth_info.password ~= password then
+	if persistent_data.password ~= password then
 		return false
 	end
 
-	local player = Player(name, auth_info, connection_info)
+	error("TODO: get pos from somewhere")
 
-	local last_login = auth_info.last_login
-	auth_info.last_login = os.time()
+	local player = Player(name, connection_info, persistent_data)
+
+	local last_login = persistent_data.last_login
+	persistent_data.last_login = os.time()
 
 	modtest.api.connected_players[name] = player
 

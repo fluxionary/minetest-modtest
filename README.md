@@ -18,8 +18,18 @@ this project, but you may be interested in them:
 
 ## why does it exist?
 
-it's meant as a way of running tests on a mod whenever you try to commit, using a utility like [pre-commit](????).
-if your update fails the tests, or if there's code that isn't covered by tests, your commit will be rejected.
+it's meant as a way of running tests on a mod whenever you try to commit, using a utility like [pre-commit](TODO: link).
+if you want, if your update fails the tests, or if there's code that isn't covered by tests, your commit will be
+rejected until you resolve the issue.
+
+### why not just launch a minetest instance and pipe code into the runtime it somehow?
+
+mostly, because i don't have a great understanding of how to do that. doing it this way also lets us test problems at
+startup, instead of just ending up w/ a failed launch of the engine.
+
+the minetest engine is meant to be the "gold standard", but we certainly don't need everything it does to test mods.
+i'm hoping that providing a "light" version of the lua API is enough to test most everything that's possible for mods to
+trigger and be aware of.
 
 ## how do i use it?
 
@@ -28,15 +38,23 @@ if your update fails the tests, or if there's code that isn't covered by tests, 
 * the user (someone designing tests for a mod or a server) shouldn't have to understand anything more than:
   * the minetest lua API
   * busted, a lua testing framework
-  * a minimal framework for triggering events
+  * an API for manually triggering events that'd normally be triggered by the engine
+* modtest will handle everything other than server-generated events.
+  * server-generated events can be triggered explicitly through the modtest API. e.g.
+    * running a globalstep
+    * advancing the timer (which won't trigger anything itself)
+    * having a player punch another object
+    * etc.
 
 ### dependencies
 
 * luajit 2.1-beta
-  * lua 5.1 might also work fine, but that is not tested.
+
+  lua 5.1 might also work fine, but i'm only going to test w/ luajit.
+
 * busted
 
-  busted is most easily installed via luarocks. use your favorite search engine to look that up.
+  busted is most easily installed via luarocks. use your favorite search engine to look up how to do that.
 
 * some version of the minetest engine
 

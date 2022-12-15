@@ -1,0 +1,2 @@
+this directory should eventually contain code to test whether the modtest code is itself correct.
+probably calling any tests that minetest has is a good idea?

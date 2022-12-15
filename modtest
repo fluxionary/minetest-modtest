@@ -41,11 +41,10 @@ function modtest.loadfile(...)
 	return loadfile(to_load)
 end
 
-modtest.dofile("util")
-modtest.dofile("deque")
+modtest.dofile("util", "init")
 modtest.dofile("parse_args")
 
-modtest.dofile("faketest", "init")
+modtest.dofile("lua_api", "init")
 
 modtest.dofile("load_mods")
 

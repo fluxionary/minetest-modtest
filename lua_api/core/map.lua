@@ -1,29 +1,29 @@
-local m_min = math.min
-local m_max = math.max
-local m_floor = math.floor
-
-local in_bounds = modtest.util.in_bounds
-local bound = modtest.util.bound
-
-local mapblock_size = 16
-local chunksize = m_floor(tonumber(minetest.settings:get("chunksize")) or 5)
-local max_mapgen_limit = 31007
-local mapgen_limit = m_floor(tonumber(minetest.settings:get("mapgen_limit")) or max_mapgen_limit)
-local mapgen_limit_b = m_floor(bound(0, mapgen_limit, max_mapgen_limit) / mapblock_size)
-local mapgen_limit_min = -mapgen_limit_b * mapblock_size
-local mapgen_limit_max = (mapgen_limit_b + 1) * mapblock_size - 1
-
-local map_min_i = mapgen_limit_min + (mapblock_size * chunksize)
-local map_max_i = mapgen_limit_max - (mapblock_size * chunksize)
-
-local v_add = vector.add
-local v_copy = vector.copy
-local v_new = vector.new
-local v_sort = vector.sort
-local v_sub = vector.subtract
-
-local map_min_p = v_new(map_min_i, map_min_i, map_min_i)
-local map_max_p = v_new(map_max_i, map_max_i, map_max_i)
+--local m_min = math.min
+--local m_max = math.max
+--local m_floor = math.floor
+--
+--local in_bounds = modtest.util.in_bounds
+--local bound = modtest.util.bound
+--
+--local mapblock_size = 16
+--local chunksize = m_floor(tonumber(minetest.settings:get("chunksize")) or 5)
+--local max_mapgen_limit = 31007
+--local mapgen_limit = m_floor(tonumber(minetest.settings:get("mapgen_limit")) or max_mapgen_limit)
+--local mapgen_limit_b = m_floor(bound(0, mapgen_limit, max_mapgen_limit) / mapblock_size)
+--local mapgen_limit_min = -mapgen_limit_b * mapblock_size
+--local mapgen_limit_max = (mapgen_limit_b + 1) * mapblock_size - 1
+--
+--local map_min_i = mapgen_limit_min + (mapblock_size * chunksize)
+--local map_max_i = mapgen_limit_max - (mapblock_size * chunksize)
+--
+--local v_add = vector.add
+--local v_copy = vector.copy
+--local v_new = vector.new
+--local v_sort = vector.sort
+--local v_sub = vector.subtract
+--
+--local map_min_p = v_new(map_min_i, map_min_i, map_min_i)
+--local map_max_p = v_new(map_max_i, map_max_i, map_max_i)
 
 modtest.api.map = {}
 

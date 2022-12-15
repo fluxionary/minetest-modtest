@@ -1,7 +1,7 @@
 what has been implemented, even as a stub:
 * async
-  * [ ] do_async_callback
-  * [ ] register_async_dofile
+  * [x] do_async_callback
+  * [x] register_async_dofile
 
 * entity
   * [ ] add_entity
