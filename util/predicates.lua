@@ -1,5 +1,9 @@
 local util = modtest.util
 
+function util.is_yes(value)
+	return (value == "y" or value == "yes" or value == "true" or value == true or (tonumber(value) or 0) ~= 0)
+end
+
 function util.in_bounds(min, v, max)
 	return min <= v and v <= max
 end

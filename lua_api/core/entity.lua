@@ -2,7 +2,7 @@ core.object_refs = {}
 core.luaentities = {}
 
 function core.add_entity(pos, name, staticdata)
-	local object = EntityObject(pos, name)
+	local object = EntityRef(pos, name)
 	local def = core.registered_entities[name]
 	if def then
 		local initial_properties = def.initial_properties
@@ -32,10 +32,23 @@ function core.clear_objects()
 	end
 end
 
-function core.get_objects_in_area()
-	error("TODO: implement")
+function core.get_objects_in_area(pos1, pos2)
+	local minp, maxp = vector.sort(pos1, pos2)
+	local objects = {}
+	for _, obj in pairs(core.object_refs) do
+		if modtest.util.in_bounds(minp, obj:get_pos(), maxp) then
+			objects[#objects + 1] = obj
+		end
+	end
+	return objects
 end
 
-function core.get_objects_inside_radius()
-	error("TODO: implement")
+function core.get_objects_inside_radius(pos, radius)
+	local objects = {}
+	for _, obj in pairs(core.object_refs) do
+		if vector.distance(pos, obj:get_pos()) <= radius then
+			objects[#objects + 1] = obj
+		end
+	end
+	return objects
 end

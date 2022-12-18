@@ -10,13 +10,13 @@ repos:
 
   - repo: local
     hooks:
-      - id: luacheck
-        name: luacheck
-        language: system
-        entry: luacheck
-        pass_filenames: true
-        types: [ file, lua ]
-        args: [ -q ]
+#      - id: luacheck
+#        name: luacheck
+#        language: system
+#        entry: luacheck
+#        pass_filenames: true
+#        types: [ file, lua ]
+#        args: [ -q ]
       - id: stylua
         name: stylua
         language: system

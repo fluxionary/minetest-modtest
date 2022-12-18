@@ -153,14 +153,6 @@ util.named_colors = {
 	yellowgreen = { a = 255, r = 0x9a, b = 0xcd, g = 0x32 },
 }
 
-function util.split(str)
-	local values = {}
-	for s in str:gmatch("([^%s,]+)") do
-		table.insert(values, s)
-	end
-	return values
-end
-
 local settingtypes_patterns = {
 	"^(%S+)%s+%([^%)]*%)%s+int%s+(%S+)",
 	"^(%S+)%s+%([^%)]*%)%s+string%s*(.*)$",
@@ -232,4 +224,86 @@ function util.normalize_colorspec(v)
 	else
 		error(f("invalid colorspec %q", v))
 	end
+end
+
+local function parse_settings(fh, filepath)
+	local linenum = 0
+	local values = {}
+
+	local state = "normal"
+	local multikey
+	local multiline
+
+	for line in fh:lines() do
+		linenum = linenum + 1
+		line = line:trim()
+		if state == "group" then
+			if line:sub(-1) == "}" then
+				table.insert(multiline, line)
+				values[multikey] = table.concat(multiline, "\n"):trim()
+				multikey = nil
+				multiline = nil
+				state = "normal"
+			else
+				table.insert(multiline, line)
+			end
+		elseif state == "multiline" then
+			if line:sub(-3) == '"""' then
+				table.insert(multiline, line:sub(1, -4))
+				values[multikey] = table.concat(multiline, "\n"):trim()
+				multikey = nil
+				multiline = nil
+				state = "normal"
+			end
+		elseif state == "normal" then
+			if #line > 0 and line:sub(1, 1) ~= "#" then
+				local key, value = line:match("^([^=]+)=(.*)$")
+				if not (key and value) then
+					error(("invalid conf file %q line %i"):format(filepath, linenum))
+				end
+
+				key = key:trim()
+				value = value:trim()
+
+				if key == "" then
+					error(("blank key in %q line %i"):format(filepath, linenum))
+				end
+
+				if value:sub(1, 1) == "{" and value:sub(-1) ~= "}" then
+					state = "group"
+					multikey = key
+					multiline = { value }
+				elseif value:sub(1, 3) == '"""' and (value:sub(-3) ~= '"""' or #value < 6) then
+					state = "multiline"
+					multikey = key
+					multiline = { value:sub(4) }
+				else
+					values[key] = value
+				end
+			end
+		else
+			error(("somehow in invalid state %q line %i"):format(state, linenum))
+		end
+	end
+
+	return values
+end
+
+function util.load_settings(filename, defaults)
+	local settings
+	if defaults then
+		settings = table.copy(defaults)
+	else
+		settings = {}
+	end
+
+	if modtest.util.file_exists(filename) then
+		local fh = io.open(filename)
+		local changes = parse_settings(fh, filename)
+		io.close(fh)
+
+		modtest.util.set_all(settings, changes)
+	end
+
+	return settings
 end

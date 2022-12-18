@@ -6,6 +6,10 @@ local storages = setmetatable({}, {
 	end,
 })
 
+function modtest.api.clear_storage(modname)
+	storages[modname] = nil
+end
+
 function core.get_mod_storage(modname)
 	return storages[modname]
 end

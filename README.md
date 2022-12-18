@@ -7,6 +7,9 @@ this project, but you may be interested in them:
 * [mineunit](https://github.com/S-S-X/mineunit)
 * [mtt](https://github.com/buckaroobanzay/mtt)
 
+check [checklist.md] to see what still needs doing. probably the first proper release will not implement *everything*,
+but will be mostly functional.
+
 ## what's modtest do?
 
 * provides a command-line utility for running tests on minetest mods. it uses

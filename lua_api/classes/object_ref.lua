@@ -1,13 +1,12 @@
-ActiveObject = modtest.util.class1()
+ObjectRef = modtest.util.class1()
 
-modtest.util.check_removed(ActiveObject)
+modtest.util.check_removed(ObjectRef)
 
 local next_object_id = 1
 
-function ActiveObject:_init(pos)
+function ObjectRef:_init(pos)
 	self._id, next_object_id = next_object_id, next_object_id + 1
 	core.object_refs[self._id] = self
-	self._removed = false -- set to true when luaentity removed or player disconnects
 	self._pos = pos
 	self._velocity = vector.zero()
 	self._hp = 1
@@ -21,44 +20,48 @@ function ActiveObject:_init(pos)
 	}
 end
 
-function ActiveObject:get_pos()
+function ObjectRef:get_pos()
 	return vector.copy(self._pos)
 end
 
-function ActiveObject:set_pos(pos)
+function ObjectRef:set_pos(pos)
 	if not vector.check(pos) then
 		error("position must be a vector")
 	end
 	self._pos = pos
 end
 
-function ActiveObject:get_velocity()
+function ObjectRef:get_velocity()
 	return vector.copy(self._velocity)
 end
 
-function ActiveObject:add_velocity(vel)
+function ObjectRef:add_velocity(vel)
 	if not vector.check(vel) then
 		error("velocity must be a vector")
 	end
 	self._velocity = vector.add(self._velocity, vel)
 end
 
-function ActiveObject:move_to(pos, continuous)
+function ObjectRef:move_to(pos, continuous)
 	if not vector.check(pos) then
 		error("position must be a vector")
 	end
 	self._pos = pos
 end
 
-function ActiveObject:punch(puncher, time_from_last_punch, tool_capabilities, direction)
+function ObjectRef:punch(puncher, time_from_last_punch, tool_capabilities, direction)
 	error("TODO: implement")
 end
 
-function ActiveObject:get_hp()
+function ObjectRef:right_click(clicker)
+	error("TODO: implement")
+end
+
+function ObjectRef:get_hp()
 	return self._hp
 end
 
-function ActiveObject:set_hp(hp, reason)
+function ObjectRef:set_hp(hp, reason)
 	if type(hp) ~= "number" then
 		error("hp must be a number")
 	end
@@ -66,83 +69,87 @@ function ActiveObject:set_hp(hp, reason)
 	error("TODO: implement more fully")
 end
 
-function ActiveObject:get_inventory()
+function ObjectRef:get_inventory()
 	return
 end
 
-function ActiveObject:get_wield_list()
+function ObjectRef:get_wield_list()
+	return ""
+end
+
+function ObjectRef:get_wield_index()
 	return 1
 end
 
-function ActiveObject:get_wielded_item()
+function ObjectRef:get_wielded_item()
 	return ItemStack("")
 end
 
-function ActiveObject:set_wielded_item(item)
+function ObjectRef:set_wielded_item(item)
 	return false
 end
 
-function ActiveObject:set_armor_groups(groups)
+function ObjectRef:set_armor_groups(groups)
 	self._armor_groups = table.copy(groups)
 end
 
-function ActiveObject:get_armor_groups()
+function ObjectRef:get_armor_groups()
 	return table.copy(self._armor_groups)
 end
 
-function ActiveObject:set_animation(frame_range, frame_speed, frame_blend, frame_loop)
+function ObjectRef:set_animation(frame_range, frame_speed, frame_blend, frame_loop)
 	self._animation = { frame_range, frame_speed, frame_blend, frame_loop }
 end
 
-function ActiveObject:get_animation()
+function ObjectRef:get_animation()
 	return unpack(self._animation)
 end
 
-function ActiveObject:set_animation_frame_speed(frame_speed)
+function ObjectRef:set_animation_frame_speed(frame_speed)
 	self._animation[2] = frame_speed
 end
 
-function ActiveObject:set_attach(parent, bone, position, rotation, forced_visible)
+function ObjectRef:set_attach(parent, bone, position, rotation, forced_visible)
 	error("TODO: implement")
 end
 
-function ActiveObject:get_attach()
+function ObjectRef:get_attach()
 	error("TODO: implement")
 end
 
-function ActiveObject:get_children()
+function ObjectRef:get_children()
 	error("TODO: implement")
 end
 
-function ActiveObject:set_detach()
+function ObjectRef:set_detach()
 	error("TODO: implement")
 end
 
-function ActiveObject:set_bone_position(bone, position, rotation)
+function ObjectRef:set_bone_position(bone, position, rotation)
 	error("TODO: implement")
 end
 
-function ActiveObject:get_bone_position(bone)
+function ObjectRef:get_bone_position(bone)
 	error("TODO: implement")
 end
 
-function ActiveObject:set_properties(properties)
+function ObjectRef:set_properties(properties)
 	modtest.util.set_all(self._properties, properties)
 end
 
-function ActiveObject:get_properties()
+function ObjectRef:get_properties()
 	return table.copy(self._properties)
 end
 
-function ActiveObject:is_player()
+function ObjectRef:is_player()
 	return false
 end
 
-function ActiveObject:get_nametag_attributes()
+function ObjectRef:get_nametag_attributes()
 	return table.copy(self._nametag_attributes)
 end
 
-function ActiveObject:set_nametag_attributes(attributes)
+function ObjectRef:set_nametag_attributes(attributes)
 	if attributes.text ~= nil and type(attributes.text) ~= "string" then
 		error("nametag text must be a string")
 	else
@@ -166,320 +173,320 @@ end
 
 -- Lua entity only (no-op for other objects)
 
-function ActiveObject:remove()
+function ObjectRef:remove()
 	modtest.api.warn("called on non-luaentity")
 end
 
-function ActiveObject:set_velocity(vel)
+function ObjectRef:set_velocity(vel)
 	modtest.api.warn("called on non-luaentity")
 end
 
-function ActiveObject:set_acceleration(acc)
+function ObjectRef:set_acceleration(acc)
 	modtest.api.warn("called on non-luaentity")
 end
 
-function ActiveObject:get_acceleration()
+function ObjectRef:get_acceleration()
 	modtest.api.warn("called on non-luaentity")
 end
 
-function ActiveObject:set_rotation(rot)
+function ObjectRef:set_rotation(rot)
 	modtest.api.warn("called on non-luaentity")
 end
 
-function ActiveObject:get_rotation()
+function ObjectRef:get_rotation()
 	modtest.api.warn("called on non-luaentity")
 end
 
-function ActiveObject:set_yaw(yaw)
+function ObjectRef:set_yaw(yaw)
 	modtest.api.warn("called on non-luaentity")
 end
 
-function ActiveObject:get_yaw()
+function ObjectRef:get_yaw()
 	modtest.api.warn("called on non-luaentity")
 end
 
-function ActiveObject:set_texture_mod(mod)
+function ObjectRef:set_texture_mod(mod)
 	modtest.api.warn("called on non-luaentity")
 end
 
-function ActiveObject:get_texture_mod()
+function ObjectRef:get_texture_mod()
 	modtest.api.warn("called on non-luaentity")
 end
 
-function ActiveObject:set_sprite(start_frame, num_frames, framelength, select_x_by_camera)
+function ObjectRef:set_sprite(start_frame, num_frames, framelength, select_x_by_camera)
 	modtest.api.warn("called on non-luaentity")
 end
 
-function ActiveObject:get_entity_name()
+function ObjectRef:get_entity_name()
 	modtest.api.warn("called on non-luaentity")
-	modtest.api.warn("called deprecated")
+	core.log("deprecated", "ObjectRef:get_entity_name()")
 end
 
-function ActiveObject:get_luaentity()
+function ObjectRef:get_luaentity()
 	modtest.api.warn("called on non-luaentity")
 end
 
 -- Player only (no-op for other objects)
 
-function ActiveObject:get_player_name()
+function ObjectRef:get_player_name()
 	modtest.api.warn("called on non-player")
 	return ""
 end
 
-function ActiveObject:get_player_velocity()
+function ObjectRef:get_player_velocity()
 	modtest.api.warn("called on non-player")
-	modtest.api.warn("called deprecated")
+	core.log("deprecated", "ObjectRef:get_player_velocity()")
 	return vector.zero()
 end
 
-function ActiveObject:add_player_velocity(vel)
+function ObjectRef:add_player_velocity(vel)
 	modtest.api.warn("called on non-player")
-	modtest.api.warn("called deprecated")
+	core.log("deprecated", "ObjectRef:add_player_velocity(vel)")
 end
 
-function ActiveObject:get_look_dir()
-	modtest.api.warn("called on non-player")
-end
-
-function ActiveObject:get_look_vertical()
+function ObjectRef:get_look_dir()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_look_horizontal()
+function ObjectRef:get_look_vertical()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_look_vertical(radians)
+function ObjectRef:get_look_horizontal()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_look_horizontal(radians)
+function ObjectRef:set_look_vertical(radians)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_look_pitch()
-	modtest.api.warn("called on non-player")
-	modtest.api.warn("called deprecated")
-end
-
-function ActiveObject:get_look_yaw()
-	modtest.api.warn("called on non-player")
-	modtest.api.warn("called deprecated")
-end
-
-function ActiveObject:set_look_pitch(radians)
-	modtest.api.warn("called on non-player")
-	modtest.api.warn("called deprecated")
-end
-
-function ActiveObject:set_look_yaw(radians)
-	modtest.api.warn("called on non-player")
-	modtest.api.warn("called deprecated")
-end
-
-function ActiveObject:get_breath()
+function ObjectRef:set_look_horizontal(radians)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_breath(value)
+function ObjectRef:get_look_pitch()
+	modtest.api.warn("called on non-player")
+	core.log("deprecated", "ObjectRef:get_look_pitch()")
+end
+
+function ObjectRef:get_look_yaw()
+	modtest.api.warn("called on non-player")
+	core.log("deprecated", "ObjectRef:get_look_yaw()")
+end
+
+function ObjectRef:set_look_pitch(radians)
+	modtest.api.warn("called on non-player")
+	core.log("deprecated", "ObjectRef:set_look_pitch(radians)")
+end
+
+function ObjectRef:set_look_yaw(radians)
+	modtest.api.warn("called on non-player")
+	core.log("deprecated", "ObjectRef:set_look_yaw(radians)")
+end
+
+function ObjectRef:get_breath()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_fov(fov, is_multiplier, transition_time)
+function ObjectRef:set_breath(value)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_fov()
+function ObjectRef:set_fov(fov, is_multiplier, transition_time)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_attribute(attribute, value)
-	modtest.api.warn("called on non-player")
-	modtest.api.warn("called deprecated")
-end
-
-function ActiveObject:get_attribute(attribute)
-	modtest.api.warn("called on non-player")
-	modtest.api.warn("called deprecated")
-end
-
-function ActiveObject:get_meta()
+function ObjectRef:get_fov()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_inventory_formspec(formspec)
+function ObjectRef:set_attribute(attribute, value)
+	modtest.api.warn("called on non-player")
+	core.log("deprecated", "ObjectRef:set_attribute(attribute, value)")
+end
+
+function ObjectRef:get_attribute(attribute)
+	modtest.api.warn("called on non-player")
+	core.log("deprecated", "ObjectRef:get_attribute(attribute)")
+end
+
+function ObjectRef:get_meta()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_inventory_formspec()
+function ObjectRef:set_inventory_formspec(formspec)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_formspec_prepend(formspec)
+function ObjectRef:get_inventory_formspec()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_formspec_prepend(formspec)
+function ObjectRef:set_formspec_prepend(formspec)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_player_control()
+function ObjectRef:get_formspec_prepend(formspec)
+	modtest.api.warn("called on non-player")
+end
+
+function ObjectRef:get_player_control()
 	modtest.api.warn("called on non-player")
 	return {}
 end
 
-function ActiveObject:get_player_control_bits()
+function ObjectRef:get_player_control_bits()
 	modtest.api.warn("called on non-player")
 	return 0
 end
 
-function ActiveObject:set_physics_override(override_table)
+function ObjectRef:set_physics_override(override_table)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_physics_override()
+function ObjectRef:get_physics_override()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:hud_add(def)
+function ObjectRef:hud_add(def)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:hud_remove(id)
+function ObjectRef:hud_remove(id)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:hud_change(id, stat, value)
+function ObjectRef:hud_change(id, stat, value)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:hud_get(id)
+function ObjectRef:hud_get(id)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:hud_set_flags(flags)
+function ObjectRef:hud_set_flags(flags)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:hud_get_flags()
+function ObjectRef:hud_get_flags()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:hud_set_hotbar_itemcount(count)
+function ObjectRef:hud_set_hotbar_itemcount(count)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:hud_get_hotbar_itemcount()
+function ObjectRef:hud_get_hotbar_itemcount()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:hud_set_hotbar_image(texturename)
+function ObjectRef:hud_set_hotbar_image(texturename)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:hud_get_hotbar_image()
+function ObjectRef:hud_get_hotbar_image()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:hud_set_hotbar_selected_image(texturename)
+function ObjectRef:hud_set_hotbar_selected_image(texturename)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:hud_get_hotbar_selected_image()
+function ObjectRef:hud_get_hotbar_selected_image()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_minimap_modes(modes, selected_mode)
+function ObjectRef:set_minimap_modes(modes, selected_mode)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_sky(sky_parameters, type, textures, clouds)
+function ObjectRef:set_sky(sky_parameters, type, textures, clouds)
 	modtest.api.warn("called on non-player")
 	if type or textures or clouds then
-		modtest.api.warn("called deprecated")
+		core.log("deprecated", "ObjectRef:set_sky(color, type, textures, clouds)")
 	end
 end
 
-function ActiveObject:get_sky(as_table)
+function ObjectRef:get_sky(as_table)
 	modtest.api.warn("called on non-player")
-	if not as_table then
-		modtest.api.warn("called deprecated")
+	if as_table ~= true then
+		core.log("deprecated", "ObjectRef:get_sky()")
 	end
 end
 
-function ActiveObject:get_sky_color()
+function ObjectRef:get_sky_color()
 	modtest.api.warn("called on non-player")
-	modtest.api.warn("called deprecated")
+	core.log("deprecated", "ObjectRef:get_sky_color()")
 end
 
-function ActiveObject:set_sun(sun_parameters)
-	modtest.api.warn("called on non-player")
-end
-
-function ActiveObject:get_sun()
+function ObjectRef:set_sun(sun_parameters)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_moon(moon_parameters)
+function ObjectRef:get_sun()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_moon()
+function ObjectRef:set_moon(moon_parameters)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_stars(star_parameters)
+function ObjectRef:get_moon()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_stars()
+function ObjectRef:set_stars(star_parameters)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_clouds(cloud_parameters)
+function ObjectRef:get_stars()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_clouds()
+function ObjectRef:set_clouds(cloud_parameters)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:override_day_night_ratio(ratio)
+function ObjectRef:get_clouds()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_day_night_ratio()
+function ObjectRef:override_day_night_ratio(ratio)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)
+function ObjectRef:get_day_night_ratio()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_local_animation()
+function ObjectRef:set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_eye_offset(firstperson, thirdperson)
+function ObjectRef:get_local_animation()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_eye_offset()
+function ObjectRef:set_eye_offset(firstperson, thirdperson)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:send_mapblock(blockpos)
+function ObjectRef:get_eye_offset()
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:set_lighting(light_definition)
+function ObjectRef:send_mapblock(blockpos)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:get_lighting()
+function ObjectRef:set_lighting(light_definition)
 	modtest.api.warn("called on non-player")
 end
 
-function ActiveObject:respawn()
+function ObjectRef:get_lighting()
+	modtest.api.warn("called on non-player")
+end
+
+function ObjectRef:respawn()
 	modtest.api.warn("called on non-player")
 end

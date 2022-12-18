@@ -26,44 +26,70 @@
 --local map_max_p = v_new(map_max_i, map_max_i, map_max_i)
 
 modtest.api.map = {}
+modtest.api.active_mapblocks = {}
 
 function modtest.api.clear_map()
 	modtest.api.map = {}
 end
 
-local function new_mapblock()
-	local mapblock = {}
+local Mapblock = modtest.util.class1()
+
+function Mapblock._init(blockpos)
+	self.blockpos = blockpos
+
 	for x = 1, 16 do
 		local panel = {}
 		for y = 1, 16 do
 			local column = {}
 			for z = 1, 16 do
-				column[z] = core.CONTENT_UNKNOWN
+				column[z] = { name = core.CONTENT_UNKNOWN, param1 = 0, param2 = 0 }
 			end
 			panel[y] = column
 		end
-		mapblock[x] = panel
+		self[x] = panel
 	end
-	mapblock.content_ids = { core.CONTENT_UNKNOWN }
-	mapblock.meta = {}
-	mapblock.timers = {}
-	return mapblock
+
+	self.active = false
+	self.content_ids = { core.CONTENT_UNKNOWN }
+	self.meta = {}
+	self.timers = {}
 end
 
-function modtest.api.get_raw_mapblock(blockpos)
+function Mapblock:iter(filter)
+	local p1 = self.blockpos * 16
+	local p2 = p1 + 15
+	local va = VoxelArea(p1, p2)
+	local i = 0
+	return function() end
+end
+
+function modtest.api.get_mapblock(blockpos)
 	local index = core.hash_node_position(blockpos)
 	return modtest.api.map[index]
 end
 
-function modtest.api.emerge_raw_mapblock(blockpos)
+function modtest.api.emerge_mapblock(blockpos)
 	local index = core.hash_node_position(blockpos)
-	local raw_mapblock = modtest.api.map[index]
-	if not raw_mapblock then
-		raw_mapblock = new_mapblock()
-		modtest.api.map[index] = raw_mapblock
+	local mapblock = modtest.api.map[index]
+
+	if not mapblock then
+		mapblock = Mapblock(blockpos)
+		modtest.api.map[index] = mapblock
 	end
-	return raw_mapblock
+
+	return mapblock
 end
+
+function modtest.api.activate_mapblock(blockpos)
+	local mapblock = modtest.api.emerge_mapblock(blockpos)
+	mapblock.active = true
+	for _, def in ipairs(core.registered_lbms) do
+		error("TODO: implement")
+		--for
+	end
+end
+
+function modtest.api.deactivate_mapblock(blockpos) end
 
 function core.add_node()
 	error("TODO: implement")

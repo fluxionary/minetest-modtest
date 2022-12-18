@@ -1,3 +1,5 @@
+local f = string.format
+
 ItemStack = modtest.util.class1()
 
 local function parse_itemstring(itemstring)
@@ -10,7 +12,7 @@ local function parse_itemstring(itemstring)
 		name = itemstring:match("^(%S+)$")
 	end
 	if not name then
-		error(("we don't know how to parse itemstring %q"):format(itemstring))
+		error(f("we don't know how to parse itemstring %q", itemstring))
 	end
 	if not wear then
 		wear = 0
@@ -19,6 +21,16 @@ local function parse_itemstring(itemstring)
 		count = 1
 	end
 	return name, count, wear
+end
+
+local function is_item_stack(item)
+	return (
+		type(item) == "table"
+		and type(item._name) == "string"
+		and type(item._count) == "number"
+		and type(item._wear) == "wear"
+		and type(item._meta) == "table" -- close enough
+	)
 end
 
 --[[
@@ -35,6 +47,7 @@ function ItemStack:_init(thing)
 		self._name, self._count, self._wear = parse_itemstring(thing)
 	elseif type(thing) == "table" then
 		if thing._name and thing._count and thing._wear then
+			-- another ItemStack
 			self._name = thing._name
 			self._count = thing._count
 			self._wear = thing._wear
@@ -58,8 +71,18 @@ function ItemStack:get_name()
 end
 
 function ItemStack:set_name(item_name)
-	self._name = item_name
-	return item_name == ""
+	assert(
+		type(item_name) == "string",
+		f("stack name must be a string, is a %s (%s)", type(item_name), tostring(item_name))
+	)
+
+	if item_name == "" then
+		self:clear()
+		return false
+	else
+		self._name = item_name
+		return true
+	end
 end
 
 function ItemStack:get_count()
@@ -67,10 +90,14 @@ function ItemStack:get_count()
 end
 
 function ItemStack:set_count(count)
-	if count < 0 or count >= (2 ^ 16) or count ~= math.round(count) then
-		error("ItemStack: invalid count")
+	assert(type(count) == "number", f("count must be a number, is a %s (%s)", type(count), tostring(count)))
+
+	if count <= 0 or count >= (2 ^ 16) or count ~= math.round(count) then
+		self:clear()
+		return false
+	else
+		self._count = count
 	end
-	self._count = count
 end
 
 function ItemStack:get_wear()
@@ -78,10 +105,19 @@ function ItemStack:get_wear()
 end
 
 function ItemStack:set_wear(wear)
-	if wear < 0 or wear >= (2 ^ 16) or wear ~= math.round(wear) then
-		error("ItemStack: invalid wear")
+	assert(type(wear) == "number", f("wear must be a number, is a %s (%s)", type(wear), tostring(wear)))
+
+	if wear >= 65536 then
+		self:clear()
+		return false
+	elseif wear >= 0 then
+		self._wear = math.floor(wear)
+		return true
+	else
+		-- truncates non-int part, then casts to u16
+		self._wear = math.ceil(wear) % 65536
+		return true
 	end
-	self._wear = wear
 end
 
 function ItemStack:get_meta()
@@ -97,14 +133,41 @@ function ItemStack:set_metadata(metadata)
 end
 
 function ItemStack:get_description()
-	local def = core.registered_items[self._name] or {}
-	return self._meta.description or def.description or self._name
+	local description = self._meta:get("description")
+
+	if description then
+		return description
+	end
+
+	local def = self:get_definition()
+	return def.description or self._name
 end
 
+--[[
+order of resolution:
+* `short_description` in item metadata (See [Item Metadata].)
+* `short_description` in item definition
+* first line of the description (From item meta or def, see `get_description()`.)
+* Returns nil if none of the above are set
+]]
 function ItemStack:get_short_description()
-	local def = core.registered_items[self._name] or {}
-	local sd = self._meta.short_description or def.short_description or self:get_description()
-	return sd:match("^([^\n]+)")
+	local sd = self._meta:get("short_description")
+	if sd then
+		return sd
+	end
+
+	-- can't use get_definition() cuz that might return definition for unknown
+	local def = core.registered_items[self._name]
+	if def.short_description then
+		return def.short_description
+	end
+	sd = self._meta:get("description") or def.description
+
+	if sd then
+		-- note that this mangles translation/color strings
+		-- see https://github.com/minetest/minetest/issues/12566
+		return sd:match("^([^\n]+)")
+	end
 end
 
 function ItemStack:clear()
@@ -140,23 +203,35 @@ function ItemStack:to_string()
 end
 
 function ItemStack:to_table()
-	error("TODO: implement")
+	return {
+		name = self._name,
+		count = self._count,
+		wear = self._wear,
+		meta = self._meta:to_table().fields,
+	}
 end
 
 function ItemStack:get_stack_max()
-	error("TODO: implement")
+	local def = self:get_definition()
+	return def.stack_max or tonumber(core.settings:get("default_stack_max"))
 end
 
 function ItemStack:get_free_space()
-	error("TODO: implement")
+	local stack_max = self:get_stack_max()
+	return math.max(0, stack_max - self._count)
 end
 
 function ItemStack:is_known()
-	error("TODO: implement")
+	return core.registered_items[self._name] ~= nil
 end
 
 function ItemStack:get_definition()
-	error("TODO: implement")
+	local def = core.registered_items[self._name]
+	if not def then
+		def = core.registered_items["unknown"]
+		assert(def, "unknown must exist")
+	end
+	return def
 end
 
 function ItemStack:get_tool_capabilities()
@@ -164,33 +239,70 @@ function ItemStack:get_tool_capabilities()
 end
 
 function ItemStack:add_wear(amount)
-	error("TODO: implement")
+	local def = self:get_definition()
+	if def.type == "tool" then
+		self:set_wear(self._wear + amount)
+		return true
+	else
+		return false
+	end
 end
 
 function ItemStack:add_wear_by_uses(max_uses)
-	error("TODO: implement")
+	self:add_wear(core.get_tool_wear_after_use(max_uses, self._wear))
 end
 
 function ItemStack:add_item(item)
-	error("TODO: implement")
+	item = ItemStack(item)
+	if (self._name ~= item._name and item._name ~= "") or self._wear ~= item._wear or self._meta ~= item._meta then
+		return item
+	end
+
+	local taken = item:take_item(self:get_free_space())
+	self._count = self._count + taken._count
+	return item
 end
 
 function ItemStack:item_fits(item)
-	error("TODO: implement")
+	if self:is_empty() then
+		return true
+	end
+
+	item = ItemStack(item)
+	if self._name ~= item._name or self._wear ~= item._wear or self._meta ~= item._meta then
+		return false
+	end
+
+	return self:get_free_space() >= item._count
 end
 
 function ItemStack:take_item(n)
-	error("TODO: implement")
+	local to_take = math.min(self._count, n)
+	local remaining = self._count - to_take
+	local to_return = ItemStack(self)
+	to_return:set_count(to_take)
+	self:set_count(remaining)
+	return to_return
 end
 
 function ItemStack:peek_item(n)
-	error("TODO: implement")
+	local to_return = ItemStack(self)
+	to_return:set_count(math.min(self._count, n))
+	return to_return
 end
 
 function ItemStack:equals(other)
-	error("TODO: implement")
+	if not is_item_stack(other) then
+		return false
+	end
+	return (
+		self._name == other._name
+		and self._count == other._count
+		and self._wear == other._wear
+		and self._meta == other._meta
+	)
 end
 
 function ItemStack:__equals(other)
-	error("TODO: implement")
+	return self:equals(other)
 end

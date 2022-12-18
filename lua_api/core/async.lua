@@ -1,4 +1,5 @@
 modtest.api.async_jobs = modtest.Deque()
+modtest.api.async_results = {}
 
 local jobid = 0
 
@@ -137,6 +138,6 @@ function modtest.api.run_next_async_job()
 	if job then
 		local job_id, func, args = unpack(job) -- also has mod_origin
 		local retval = run_job_in_env(func, args)
-		core.async_event_handler(job_id, retval)
+		table.insert(modtest.api.async_results, { job_id, retval })
 	end
 end

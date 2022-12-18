@@ -12,7 +12,6 @@ local f = string.format
 local concat_path = modtest.util.concat_path
 local directory_exists = modtest.util.directory_exists
 local file_exists = modtest.util.file_exists
-local parse_config_line = modtest.util.parse_config_line
 
 local valid_args = {
 	builtin = true,
@@ -39,23 +38,9 @@ local function get_option(arg, i)
 	return key, value
 end
 
-local function get_game_id(world_path)
-	local filename = concat_path(world_path, "world.mt")
-
-	if not file_exists(filename) then
-		return
-	end
-
-	for line in io.lines(filename) do
-		local key, value = parse_config_line(line)
-		if key == "gameid" then
-			if value == "minetest" then
-				return "minetest_game"
-			else
-				return value
-			end
-		end
-	end
+local function get_game_name(path)
+	local settings = modtest.util.load_settings(concat_path(path, "game.conf"))
+	return settings.name
 end
 
 local function parse_args(argv)
@@ -123,9 +108,13 @@ local function parse_args(argv)
 		error(f("world path %q doesn't exist", args.world))
 	end
 
-	if not file_exists(concat_path(args.world, "world.mt")) then
+	local world_mt_path = concat_path(args.world, "world.mt")
+
+	if not file_exists(world_mt_path) then
 		error(f("world path %q doesn't contain a world.mt file"))
 	end
+
+	args.world_mt = modtest.util.load_settings(world_mt_path)
 
 	if not args.mods then
 		if directory_exists(concat_path(args.mod_to_test, "modtest", "mods")) then
@@ -133,11 +122,11 @@ local function parse_args(argv)
 		elseif directory_exists(concat_path(home, ".minetest", "mods")) then
 			args.mods = concat_path(home, ".minetest", "mods")
 		end
-		-- mods are optional, so no error if they don't exist
+		-- mods are optional, so no error if the dir doesn't exist
 	end
 
 	if not args.game then
-		local game_id = get_game_id(args.world)
+		local game_id = args.world_mt.gameid
 		if not game_id then
 			error(f("cannot find game id in world.mt"))
 		end
@@ -160,6 +149,8 @@ local function parse_args(argv)
 	if not file_exists(concat_path(args.game, "game.conf")) then
 		error("game folder contains no game.conf")
 	end
+
+	args.game_name = get_game_name(args.game)
 
 	if not directory_exists(concat_path(args.game), "mods") then
 		error("game folder contains no mods folder")

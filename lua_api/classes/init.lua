@@ -11,7 +11,7 @@ modtest.dofile("lua_api", "classes", "inv_ref")
 
 modtest.dofile("lua_api", "classes", "vector")
 
-modtest.dofile("lua_api", "classes", "active_object")
+modtest.dofile("lua_api", "classes", "object_ref")
 modtest.dofile("lua_api", "classes", "player")
 modtest.dofile("lua_api", "classes", "entity_object")
 

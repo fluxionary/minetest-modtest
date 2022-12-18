@@ -2,8 +2,6 @@ local f = string.format
 
 local concat_path = modtest.util.concat_path
 local file_exists = modtest.util.file_exists
-local parse_config_line = modtest.util.parse_config_line
-local split = modtest.util.split
 
 local function get_depends(mod_name, all_modpaths)
 	local modpath = all_modpaths[mod_name]
@@ -16,13 +14,12 @@ local function get_depends(mod_name, all_modpaths)
 	local depends = {}
 	local optional_depends = {}
 	if file_exists(conf_file) then
-		for line in io.lines(conf_file) do
-			local key, value = parse_config_line(line)
-			if key == "depends" then
-				depends = split(value)
-			elseif key == "optional_depends" then
-				optional_depends = split(value)
-			end
+		local conf = modtest.util.load_settings(conf_file)
+		if conf.depends then
+			depends = conf.depends:split("%s*,%s*", true, -1, true)
+		end
+		if conf.optional_depends then
+			optional_depends = conf.optional_depends:split("%s*,%s*", true, -1, true)
 		end
 	end
 	return depends, optional_depends
@@ -30,10 +27,11 @@ end
 
 local function get_mod_name(modpath)
 	local conf_file = concat_path(modpath, "mod.conf")
-	for line in io.lines(conf_file) do
-		local key, value = parse_config_line(line)
-		if key == "name" then
-			return value
+
+	if file_exists(conf_file) then
+		local conf = modtest.util.load_settings(conf_file)
+		if conf.name then
+			return conf.name
 		end
 	end
 
@@ -52,10 +50,7 @@ local function load_mod(mod_name, all_modpaths)
 	modtest.api.set_current_modname(nil)
 end
 
-local function get_mod_paths(mod_folder, mod_paths, is_root)
-	if is_root == nil then
-		is_root = true
-	end
+local function get_mod_paths(mod_folder, mod_paths, is_root, filter)
 	local subdirs = modtest.util.get_subdirectories(mod_folder)
 	local found = false
 	for _, subdir in ipairs(subdirs) do
@@ -64,9 +59,11 @@ local function get_mod_paths(mod_folder, mod_paths, is_root)
 		local modpack_conf = subdir .. "/modpack.conf"
 		if file_exists(mod_conf) then
 			local mod_name = get_mod_name(subdir)
-			mod_paths[mod_name] = subdir
-			modtest.log("debug", "found mod %s in %s", mod_name, subdir)
-			found = true
+			if not filter or filter[mod_name] then
+				mod_paths[mod_name] = subdir
+				modtest.log("debug", "found mod %s in %s", mod_name, subdir)
+				found = true
+			end
 		elseif file_exists(modpack_conf) then
 			found = get_mod_paths(subdir, mod_paths, false) or found
 		elseif is_root then
@@ -79,15 +76,26 @@ local function get_mod_paths(mod_folder, mod_paths, is_root)
 	return found
 end
 
+local function get_mod_filter()
+	local enabled = {}
+	for k, v in pairs(modtest.args.world_mt) do
+		local modname = k:match("^load_mod_(.*)$")
+		if modname then
+			enabled[modname] = modtest.util.is_yes(v)
+		end
+	end
+	return enabled
+end
+
 local function get_all_mod_paths()
 	local mod_paths = {}
 
 	-- first game
-	get_mod_paths(modtest.args.game .. "/mods", mod_paths)
-	-- the mods folder
-	get_mod_paths(modtest.args.mods, mod_paths)
+	get_mod_paths(modtest.args.game .. "/mods", mod_paths, true)
+	-- the mods folder has to pay attention to what's in world.mt
+	get_mod_paths(modtest.args.mods, mod_paths, true, get_mod_filter())
 	-- then worldmods folder
-	get_mod_paths(modtest.args.world .. "/worldmods", mod_paths)
+	get_mod_paths(modtest.args.world .. "/worldmods", mod_paths, true)
 	-- then specific "mod to test"
 	local to_test_name = get_mod_name(modtest.args.mod_to_test)
 	mod_paths[to_test_name] = modtest.args.mod_to_test

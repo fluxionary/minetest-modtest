@@ -1,5 +1,14 @@
+local f = string.format
+
 modtest.api.current_modname = nil -- i think it's nil by default?
 modtest.api.last_run_mod = nil
+
+modtest.api.all_modnames = {}
+modtest.api.all_modpaths = {}
+
+function core.get_builtin_path()
+	return modtest.args.builtin
+end
 
 function modtest.api.set_current_modname(name)
 	modtest.api.current_modname = name
@@ -17,67 +26,68 @@ function core.get_last_run_mod()
 	return modtest.api.last_run_mod
 end
 
-function core.get_worldpath()
-	return modtest.args.world
-end
-
-modtest.api.all_modpaths = {}
 function modtest.api.set_all_modpaths(modpaths)
 	modtest.api.all_modpaths = modpaths
+	for modname in pairs(modpaths) do
+		table.insert(modtest.api.all_modnames, modname)
+	end
+end
+
+function core.get_modnames()
+	return table.copy(modtest.api.all_modnames)
 end
 
 function core.get_modpath(name)
 	return modtest.api.all_modpaths[name]
 end
 
-function core.get_builtin_path()
-	error("TODO: implement")
-end
-
-function core.get_current_modname()
-	error("TODO: implement")
-end
-
-function core.get_last_run_mod()
-	error("TODO: implement")
-end
-
-function core.get_modnames()
-	error("TODO: implement")
-end
-
-function core.get_modpath()
-	error("TODO: implement")
-end
-
 function core.get_server_max_lag()
-	error("TODO: implement")
+	return modtest.api.max_lag
 end
 
 function core.get_server_status()
-	error("TODO: implement")
+	local player_names = {}
+	for name in pairs(modtest.api.connected_players) do
+		table.insert(player_names, name)
+	end
+	table.sort(player_names)
+	return f(
+		"version: %s | game: %s | uptime: %s | max lag: %.03fs | clients: %s",
+		core.get_version(),
+		modtest.args.game_name,
+		core.get_server_uptime(),
+		core.get_server_max_lag(),
+		table.concat(player_names, ", ")
+	)
 end
 
 function core.get_user_path()
-	error("TODO: implement")
+	if modtest.args.mods then
+		return modtest.util.concat_path(modtest.args.mods, "..")
+	else
+		return modtest.util.concat_path(os.getenv("HOME"), ".minetest")
+	end
 end
 
 function core.get_version()
-	error("TODO: implement")
+	return "faketest"
 end
 
 function core.get_worldpath()
-	error("TODO: implement")
+	return modtest.args.world
 end
 
 function core.is_singleplayer()
-	error("TODO: implement")
+	-- TODO: allow specifying whether or not it is
+	return false
 end
 
-function core.set_last_run_mod()
-	error("TODO: implement")
+function core.set_last_run_mod(mod)
+	modtest.api.last_run_mod = mod
 end
 
 function core.request_shutdown()
-	error("TODO: implement")
+	for _, callback in ipairs(core.registered_on_shutdown) do
+		callback()
+	end
 end

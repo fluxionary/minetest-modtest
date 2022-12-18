@@ -18,8 +18,6 @@ core = {
 	end,
 }
 
-modtest.api = {}
-
 modtest.dofile("lua_api", "core", "helpers", "init") -- provides some dependencies
 
 modtest.dofile("lua_api", "core", "async")

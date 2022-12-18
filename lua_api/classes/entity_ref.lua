@@ -1,9 +1,9 @@
-EntityObject = modtest.util.class1(ActiveObject)
+EntityRef = modtest.util.class1(ObjectRef)
 
-modtest.util.check_removed(EntityObject)
+modtest.util.check_removed(EntityRef)
 
-function EntityObject:_init(pos, name)
-	ActiveObject._init(pos)
+function EntityRef:_init(pos, name)
+	ObjectRef._init(pos)
 	self._luaentity = { name = name }
 	core.luaentities[self._id] = self._luaentity
 	self._acceleration = vector.zero()
@@ -12,60 +12,60 @@ function EntityObject:_init(pos, name)
 	modtest.util.set_all(self._luaentity, core.registered_entities[name].initial_properties)
 end
 
-function EntityObject:remove()
+function EntityRef:remove()
 	core.object_refs[self._id] = nil
 	core.luaentities[self._id] = nil
 	self._removed = true
 end
 
-function EntityObject:set_velocity(vel)
+function EntityRef:set_velocity(vel)
 	self._velocity = vector.copy(vel)
 end
 
-function EntityObject:set_acceleration(acc)
+function EntityRef:set_acceleration(acc)
 	self._acceleration = vector.copy(acc)
 end
 
-function EntityObject:get_acceleration()
+function EntityRef:get_acceleration()
 	return vector.copy(self._acceleration)
 end
 
-function EntityObject:set_rotation(rot)
+function EntityRef:set_rotation(rot)
 	self._rotation = vector.copy(rot)
 end
 
-function EntityObject:get_rotation()
+function EntityRef:get_rotation()
 	return vector.copy(self._rotation)
 end
 
-function EntityObject:set_yaw(yaw)
+function EntityRef:set_yaw(yaw)
 	self._rotation.y = yaw
 end
 
-function EntityObject:get_yaw()
+function EntityRef:get_yaw()
 	return self._rotation.y
 end
 
-function EntityObject:set_texture_mod(mod)
+function EntityRef:set_texture_mod(mod)
 	self._texture_mod = mod
 end
 
-function EntityObject:get_texture_mod()
+function EntityRef:get_texture_mod()
 	return self._texture_mod
 end
 
-function EntityObject:set_sprite(start_frame, num_frames, framelength, select_x_by_camera)
+function EntityRef:set_sprite(start_frame, num_frames, framelength, select_x_by_camera)
 	self._sprite = { start_frame, num_frames, framelength, select_x_by_camera }
 end
 
-function EntityObject:get_entity_name()
-	modtest.api.warn("called deprecated")
+function EntityRef:get_entity_name()
+	core.log("deprecated", "EntityObject:get_entity_name()")
 	local luaentity = self:get_luaentity()
 	if luaentity then
 		return luaentity.name
 	end
 end
 
-function EntityObject:get_luaentity()
+function EntityRef:get_luaentity()
 	return self._luaentity
 end
