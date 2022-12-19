@@ -9,7 +9,7 @@ description = {
 	license = "AGPL"
 }
 dependencies = {
-	"lua >= 5.1",
+	"luajit >= 2.1.0",
 	"busted >= 2.0",
 	"luacov >= 0.14"
 }

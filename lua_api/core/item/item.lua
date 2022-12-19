@@ -62,3 +62,11 @@ function core.unregister_item_raw(name)
 		end
 	end
 end
+
+function core.get_content_id()
+	error("TODO: implement")
+end
+
+function core.get_name_from_content_id()
+	error("TODO: implement")
+end

@@ -51,7 +51,7 @@ what has been implemented, even as a stub:
     * [x] get_location
 
   * [x] ItemStack
-    * [x] _init (reading serialized metadata may not work)
+    * [x] _init
     * [x] is_empty
     * [x] get_name
     * [x] set_name
@@ -66,13 +66,13 @@ what has been implemented, even as a stub:
     * [x] get_short_description
     * [x] clear
     * [x] replace
-    * [ ] to_string (outputting serialized metadata may not work)
+    * [x] to_string
     * [x] to_table
     * [x] get_stack_max
     * [x] get_free_space
     * [x] is_known
     * [x] get_definition
-    * [ ] get_tool_capabilities
+    * [x] get_tool_capabilities
     * [x] add_wear
     * [x] add_wear_by_uses
     * [x] add_item
@@ -81,9 +81,9 @@ what has been implemented, even as a stub:
     * [x] peek_item
 
   * [x] ItemStackMetaRef
-    * [ ] set_tool_capabilities
+    * [x] set_tool_capabilities
 
-  * [ ] MetaDataRef
+  * [x] MetaDataRef
     * [x] contains
     * [x] get
     * [x] get_string
@@ -409,6 +409,8 @@ what has been implemented, even as a stub:
       * [ ] get_craft_recipe
       * [ ] get_craft_result
       * [ ] register_craft
+    * [ ] get_content_id
+    * [ ] get_name_from_content_id
     * [x] register_alias_raw
     * [x] register_item_raw
     * [x] unregister_item_raw
@@ -418,10 +420,10 @@ what has been implemented, even as a stub:
     * [x] print
 
   * map
-    * [ ] add_node
+    * [x] add_node
     * [ ] add_node_level
-    * [ ] bulk_set_node
-    * [ ] compare_block_status
+    * [x] bulk_set_node
+    * [x] compare_block_status
     * [ ] delete_area
     * [ ] dig_node
     * [ ] find_node_near
@@ -431,9 +433,7 @@ what has been implemented, even as a stub:
     * [ ] fix_light
     * [ ] forceload_block
     * [ ] forceload_free_block
-    * [ ] get_content_id
     * [ ] get_meta
-    * [ ] get_name_from_content_id
     * [ ] get_natural_light
     * [ ] get_node
     * [ ] get_node_level

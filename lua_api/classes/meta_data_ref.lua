@@ -6,6 +6,10 @@ function MetaDataRef:_init()
 	self._contents = {}
 end
 
+function MetaDataRef:_is_empty()
+	return modtest.util.is_empty(self._contents)
+end
+
 function MetaDataRef:contains(key)
 	return self._contents[key] ~= nil
 end

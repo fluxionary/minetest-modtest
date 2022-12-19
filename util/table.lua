@@ -1,5 +1,9 @@
 local util = modtest.util
 
+function util.is_empty(t)
+	return next(t) == nil
+end
+
 function util.set_all(t1, t2)
 	for k, v in pairs(t2) do
 		t1[k] = v

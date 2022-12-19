@@ -6,9 +6,9 @@
 --local bound = modtest.util.bound
 --
 --local mapblock_size = 16
---local chunksize = m_floor(tonumber(minetest.settings:get("chunksize")) or 5)
+--local chunksize = m_floor(tonumber(core.settings:get("chunksize")) or 5)
 --local max_mapgen_limit = 31007
---local mapgen_limit = m_floor(tonumber(minetest.settings:get("mapgen_limit")) or max_mapgen_limit)
+--local mapgen_limit = m_floor(tonumber(core.settings:get("mapgen_limit")) or max_mapgen_limit)
 --local mapgen_limit_b = m_floor(bound(0, mapgen_limit, max_mapgen_limit) / mapblock_size)
 --local mapgen_limit_min = -mapgen_limit_b * mapblock_size
 --local mapgen_limit_max = (mapgen_limit_b + 1) * mapblock_size - 1
@@ -42,7 +42,15 @@ function Mapblock._init(blockpos)
 		for y = 1, 16 do
 			local column = {}
 			for z = 1, 16 do
-				column[z] = { name = core.CONTENT_UNKNOWN, param1 = 0, param2 = 0 }
+				column[z] = {
+					node = {
+						name = core.CONTENT_UNKNOWN,
+						param1 = 0,
+						param2 = 0,
+					},
+					meta = NodeMetaRef(),
+					timer = NodeTimerRef(),
+				}
 			end
 			panel[y] = column
 		end
@@ -50,17 +58,33 @@ function Mapblock._init(blockpos)
 	end
 
 	self.active = false
-	self.content_ids = { core.CONTENT_UNKNOWN }
-	self.meta = {}
-	self.timers = {}
 end
 
-function Mapblock:iter(filter)
+function Mapblock:get_node(pos)
+	local relative = pos - (self.blockpos * 16)
+	return self[relative.x][relative.y][relative.z].node
+end
+
+function Mapblock:set_node(pos, node)
+	local relative = pos - (self.blockpos * 16)
+	self[relative.x][relative.y][relative.z].node = node
+end
+
+function Mapblock:iter_nodes(filter)
 	local p1 = self.blockpos * 16
 	local p2 = p1 + 15
 	local va = VoxelArea(p1, p2)
 	local i = 0
-	return function() end
+	return function()
+		while i < (16 ^ 3) do
+			i = i + 1
+			local pos = va:position(i)
+			local node = self:get_node(pos)
+			if (not filter) or filter(node) then
+				return pos, node
+			end
+		end
+	end
 end
 
 function modtest.api.get_mapblock(blockpos)
@@ -89,41 +113,70 @@ function modtest.api.activate_mapblock(blockpos)
 	end
 end
 
-function modtest.api.deactivate_mapblock(blockpos) end
+function modtest.api.deactivate_mapblock(blockpos)
+	local mapblock = modtest.api.emerge_mapblock(blockpos)
+	mapblock.active = false
+end
 
-function core.add_node()
+function core.add_node(pos, node)
+	local blockpos = vector.floor(pos / 16)
+	local mapblock = modtest.api.emerge_mapblock(blockpos)
+	mapblock:set_node(pos, node)
+end
+
+--[[
+* `minetest.add_node_level(pos, level)`
+    * increase level of leveled node by level, default `level` equals `1`
+    * if `totallevel > maxlevel`, returns rest (`total-max`)
+    * `level` must be between -127 and 127
+]]
+function core.add_node_level(pos, level)
 	error("TODO: implement")
 end
 
-function core.add_node_level()
+function core.bulk_set_node(poss, node)
+	for _, pos in ipairs(poss) do
+		core.set_node(pos, node)
+	end
+end
+
+function core.compare_block_status(pos, condition)
+	if not (condition == "unknown" or condition == "emerging" or condition == "loaded" or condition == "active") then
+		return
+	end
+
+	local blockpos = vector.floor(pos / 16)
+	local mapblock = modtest.api.get_mapblock(blockpos)
+	if not mapblock then
+		return condition == "unknown"
+	else
+		if condition == "loaded" then
+			return true
+		elseif condition == "active" then
+			return mapblock.active
+		end
+	end
+
+	return false
+end
+
+function core.delete_area(pos1, pos2)
 	error("TODO: implement")
 end
 
-function core.bulk_set_node()
+function core.dig_node(pos)
 	error("TODO: implement")
 end
 
-function core.compare_block_status()
+function core.find_node_near(pos, radius, nodenames, search_center)
 	error("TODO: implement")
 end
 
-function core.delete_area()
+function core.find_nodes_in_area(pos1, pos2, nodenames, grouped)
 	error("TODO: implement")
 end
 
-function core.dig_node()
-	error("TODO: implement")
-end
-
-function core.find_node_near()
-	error("TODO: implement")
-end
-
-function core.find_nodes_in_area()
-	error("TODO: implement")
-end
-
-function core.find_nodes_in_area_under_air()
+function core.find_nodes_in_area_under_air(pos1, pos2, nodenames)
 	error("TODO: implement")
 end
 
@@ -143,15 +196,7 @@ function core.forceload_free_block()
 	error("TODO: implement")
 end
 
-function core.get_content_id()
-	error("TODO: implement")
-end
-
 function core.get_meta()
-	error("TODO: implement")
-end
-
-function core.get_name_from_content_id()
 	error("TODO: implement")
 end
 
@@ -203,9 +248,7 @@ function core.remove_node()
 	error("TODO: implement")
 end
 
-function core.set_node()
-	error("TODO: implement")
-end
+core.set_node = core.add_node
 
 function core.set_node_level()
 	error("TODO: implement")

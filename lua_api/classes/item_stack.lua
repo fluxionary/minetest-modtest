@@ -3,8 +3,11 @@ local f = string.format
 ItemStack = modtest.util.class1()
 
 local function parse_itemstring(itemstring)
-	local name, count, wear
-	name, count, wear = itemstring:match("^(%S+) (%d+) (%d+)$")
+	local name, count, wear, meta
+	name, count, wear, meta = itemstring:match("^(%S+) (%d+) (%d+) (.*$)$")
+	if not (name and count and wear and meta) then
+		name, count, wear = itemstring:match("^(%S+) (%d+) (%d+)$")
+	end
 	if not (name and count and wear) then
 		name, count = itemstring:match("^(%S+) (%d+)$")
 	end
@@ -20,7 +23,12 @@ local function parse_itemstring(itemstring)
 	if not count then
 		count = 1
 	end
-	return name, count, wear
+	if meta then
+		meta = ItemStackMetaRef(meta)
+	else
+		meta = ItemStackMetaRef()
+	end
+	return name, count, wear, meta
 end
 
 local function is_item_stack(item)
@@ -37,28 +45,30 @@ end
 thing is itemstack, itemstring, table, or nil
 ]]
 function ItemStack:_init(thing)
-	self._meta = ItemStackMetaRef()
-
 	if thing == nil then
 		self._name = ""
 		self._count = 0
 		self._wear = 0
+		self._meta = ItemStackMetaRef()
 	elseif type(thing) == "string" then
-		self._name, self._count, self._wear = parse_itemstring(thing)
+		self._name, self._count, self._wear, self._meta = parse_itemstring(thing)
 	elseif type(thing) == "table" then
 		if thing._name and thing._count and thing._wear then
 			-- another ItemStack
 			self._name = thing._name
 			self._count = thing._count
 			self._wear = thing._wear
+			self._meta = ItemStackMetaRef()
 			self._meta:from_table(thing._meta:to_table())
 		else
 			self._name = thing.name or ""
 			self._count = thing.count or 1
 			self._wear = thing.wear or 0
+			self._meta = ItemStackMetaRef()
+			self._meta:from_table({ fields = thing.meta })
 		end
 	else
-		error("invalid argument")
+		error(f("invalid argument of type %s", type(thing)))
 	end
 end
 
@@ -199,7 +209,23 @@ function ItemStack:replace(item)
 end
 
 function ItemStack:to_string()
-	error("have to serialize metadata :/")
+	local parts = { self._name }
+	local count = self._count
+	local wear = self._wear
+	local meta = self._meta
+	local has_meta = not meta:_is_empty()
+	local has_wear = wear > 0 or has_meta
+	local has_count = count > 1 or has_wear
+	if has_count then
+		parts[2] = tostring(wear)
+	end
+	if has_wear then
+		parts[3] = tostring(wear)
+	end
+	if has_meta then
+		parts[4] = meta:_serialize()
+	end
+	return table.concat(parts, " ")
 end
 
 function ItemStack:to_table()
@@ -235,7 +261,20 @@ function ItemStack:get_definition()
 end
 
 function ItemStack:get_tool_capabilities()
-	error("TODO: implement")
+	local meta = self._meta
+	local tc_json = meta:get("tool_capabilities")
+
+	if tc_json then
+		return core.parse_json(tc_json)
+	end
+
+	local tc = self:get_definition().tool_capabilities
+
+	if tc then
+		return tc
+	end
+
+	return core.registered_items[""].tool_capabilities
 end
 
 function ItemStack:add_wear(amount)

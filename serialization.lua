@@ -1,3 +1,5 @@
+local f = string.format
+
 local forward_translation = {
 	['"'] = '\\"',
 	["\\"] = "\\\\",
@@ -42,14 +44,10 @@ modtest.serialization = {
 		for i = 1, #s do
 			local c = s:sub(i, i)
 			local b = string.byte(c)
-			if 32 <= b and b <= 126 then
-				local function nothing() end
-				nothing()
-				-- TODO: do nothing better. we're trying to get around luacheck
-			elseif forward_translation[c] then
+			if forward_translation[c] then
 				c = forward_translation[c]
-			else
-				c = ("\\u%"):format(b)
+			elseif 32 > b or b > 126 then
+				c = f("\\u%x", b)
 			end
 			table.insert(parts, c)
 		end
