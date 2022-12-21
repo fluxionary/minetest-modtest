@@ -1,10 +1,17 @@
 NodeMetaRef = modtest.util.class1(MetaDataRef)
 
+modtest.util.check_removed(NodeMetaRef)
+
 function NodeMetaRef:_init(pos)
 	MetaDataRef.__init(self)
 	self._pos = pos
 	self._inventory = InvRef({ type = "node", pos = pos })
 	self._private = {}
+end
+
+function NodeMetaRef:_remove()
+	self._inventory:_remove()
+	MetaDataRef._remove(self)
 end
 
 function NodeMetaRef:get_inventory()

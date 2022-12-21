@@ -2,8 +2,14 @@ local f = string.format
 
 MetaDataRef = modtest.util.class1()
 
+modtest.util.check_removed(MetaDataRef)
+
 function MetaDataRef:_init()
 	self._contents = {}
+end
+
+function MetaDataRef:_remove()
+	self._removed = true
 end
 
 function MetaDataRef:_is_empty()

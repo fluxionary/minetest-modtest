@@ -424,31 +424,31 @@ what has been implemented, even as a stub:
     * [ ] add_node_level
     * [x] bulk_set_node
     * [x] compare_block_status
-    * [ ] delete_area
-    * [ ] dig_node
-    * [ ] find_node_near
-    * [ ] find_nodes_in_area
-    * [ ] find_nodes_in_area_under_air
+    * [x] delete_area
+    * [x] dig_node
+    * [x] find_node_near
+    * [x] find_nodes_in_area
+    * [x] find_nodes_in_area_under_air
     * [ ] find_nodes_with_meta
     * [ ] fix_light
     * [ ] forceload_block
     * [ ] forceload_free_block
-    * [ ] get_meta
-    * [ ] get_natural_light
-    * [ ] get_node
+    * [x] get_meta
+    * [x] get_natural_light
+    * [x] get_node
     * [ ] get_node_level
     * [ ] get_node_light
     * [ ] get_node_max_level
     * [ ] get_node_or_nil
-    * [ ] get_node_timer
-    * [ ] get_voxel_manip
-    * [ ] load_area
-    * [ ] place_node
-    * [ ] punch_node
-    * [ ] remove_node
-    * [ ] set_node
+    * [x] get_node_timer
+    * [x] get_voxel_manip
+    * [x] load_area
+    * [x] place_node
+    * [x] punch_node
+    * [x] remove_node
+    * [x] set_node
     * [ ] set_node_level
-    * [ ] swap_node
+    * [x] swap_node
     * [ ] transforming_liquid_add
 
   * mapgen

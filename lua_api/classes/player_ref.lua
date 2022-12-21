@@ -214,6 +214,8 @@ function Player:_disconnect(timed_out)
 		callback(self, timed_out)
 	end
 	core.object_refs[self._id] = nil
+	-- TODO: inventory persists, but using it while a player is disconnected is .. not good.
+	-- idea: set the inventory's _removed parameter while the player is logged out, and unset it if they come back?
 	self._removed = true
 end
 
