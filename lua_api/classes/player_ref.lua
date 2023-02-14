@@ -1,18 +1,27 @@
+local set_all = modtest.util.set_all
+local is_valid_colorspec = modtest.util.is_valid_colorspec
+local is_frame_index = modtest.util.is_frame_index
+local normalize_colorspec = modtest.util.normalize_colorspec
+local is_non_negative_number = modtest.util.is_non_negative_number
+
+local api = modtest.api
+----
+
 Player = modtest.util.class1(ObjectRef)
 
 modtest.util.check_removed(Player)
 
 local player_control_bits = {
-	up = 1,
-	down = 2,
-	left = 4,
-	right = 8,
-	jump = 16,
-	aux1 = 32,
-	sneak = 64,
-	dig = 128,
-	place = 256,
-	zoom = 512,
+	up = 2 ^ 0,
+	down = 2 ^ 1,
+	left = 2 ^ 2,
+	right = 2 ^ 3,
+	jump = 2 ^ 4,
+	aux1 = 2 ^ 5,
+	sneak = 2 ^ 6,
+	dig = 2 ^ 7,
+	place = 2 ^ 8,
+	zoom = 2 ^ 9,
 	LMB = 0,
 	RMB = 0,
 }
@@ -219,6 +228,18 @@ function Player:_disconnect(timed_out)
 	self._removed = true
 end
 
+api.registered_on_shown_formspecs = {}
+
+function api.register_on_shown_formspec(callback)
+	api.registered_on_shown_formspecs[#api.registered_on_shown_formspecs + 1] = callback
+end
+
+function Player:_show_formspec(formname, formspec)
+	for _, callback in ipairs(api.registered_on_shown_formspecs) do
+		callback(self, formname, formspec)
+	end
+end
+
 -- player specific
 
 function Player:set_armor_groups(groups)
@@ -375,7 +396,7 @@ end
 
 function Player:set_physics_override(override_table)
 	-- TODO input validation
-	modtest.util.set_all(self._physics_override, override_table)
+	set_all(self._physics_override, override_table)
 end
 
 function Player:get_physics_override()
@@ -394,7 +415,7 @@ function Player:hud_remove(id)
 	if self._huds[id] then
 		self._huds[id] = nil
 	else
-		modtest.api.warn("attempt to remove non-existent HUD")
+		api.warn("attempt to remove non-existent HUD")
 	end
 end
 
@@ -403,7 +424,7 @@ function Player:hud_change(id, stat, value)
 	if hud then
 		hud[stat] = value
 	else
-		modtest.api.warn("attempt to change non-existent HUD")
+		api.warn("attempt to change non-existent HUD")
 	end
 end
 
@@ -415,7 +436,7 @@ function Player:hud_get(id)
 end
 
 function Player:hud_set_flags(flags)
-	modtest.api.set_all(self._hud_flags, flags)
+	api.set_all(self._hud_flags, flags)
 end
 
 function Player:hud_get_flags()
@@ -463,7 +484,7 @@ function Player:set_minimap_modes(modes, selected_mode)
 end
 
 function Player:set_sky(sky_parameters, type, textures, clouds)
-	if type ~= nil or textures ~= nil or clouds ~= nil or modtest.util.is_valid_colorspec(sky_parameters) then
+	if type ~= nil or textures ~= nil or clouds ~= nil or is_valid_colorspec(sky_parameters) then
 		core.log("deprecated", "Player:set_sky(base_color, type, textures, clouds)")
 
 		if type(type) ~= "string" then
@@ -478,19 +499,19 @@ function Player:set_sky(sky_parameters, type, textures, clouds)
 		}
 	end
 
-	if modtest.util.is_valid_colorspec(sky_parameters.base_color) then
-		sky_parameters.base_color = modtest.util.normalize_colorspec(sky_parameters.base_color)
+	if is_valid_colorspec(sky_parameters.base_color) then
+		sky_parameters.base_color = normalize_colorspec(sky_parameters.base_color)
 	else
-		modtest.api.warn("invalid colorspec, ignoring")
+		api.warn("invalid colorspec, ignoring")
 		sky_parameters.base_color = nil
 	end
 
 	if sky_parameters.type ~= "regular" and sky_parameters.type ~= "skybox" and sky_parameters.type ~= "plain" then
-		modtest.api.warn("invalid skybox type, ignoring")
+		api.warn("invalid skybox type, ignoring")
 		sky_parameters.type = nil
 	end
 
-	modtest.util.set_all(self._sky, sky_parameters)
+	set_all(self._sky, sky_parameters)
 end
 
 function Player:get_sky(as_table)
@@ -557,11 +578,11 @@ end
 function Player:set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)
 	if
 		not (
-			modtest.util.is_frame_index(idle)
-			and modtest.util.is_frame_index(walk)
-			and modtest.util.is_frame_index(dig)
-			and modtest.util.is_frame_index(walk_while_dig)
-			and modtest.util.is_non_negative_number(frame_speed)
+			is_frame_index(idle)
+			and is_frame_index(walk)
+			and is_frame_index(dig)
+			and is_frame_index(walk_while_dig)
+			and is_non_negative_number(frame_speed)
 		)
 	then
 		error("invalid animation spec")
@@ -607,7 +628,7 @@ end
 
 function Player:set_lighting(light_definition)
 	-- TODO input validation
-	modtest.util.set_all(self._lighting, light_definition)
+	set_all(self._lighting, light_definition)
 end
 
 function Player:get_lighting()

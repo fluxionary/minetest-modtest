@@ -1,12 +1,11 @@
-modtest.api.async_jobs = modtest.Deque()
-modtest.api.async_results = {}
+local api = modtest.api
 
 local jobid = 0
 
 -- local jobid = core.do_async_callback(func, args, mod_origin)
 function core.do_async_callback(func, args, mod_origin)
 	jobid = jobid + 1
-	modtest.api.async_jobs:push_back({ jobid, func, args, mod_origin })
+	api.async_jobs:push_back({ jobid, func, args, mod_origin })
 	return jobid
 end
 
@@ -112,7 +111,7 @@ local function build_initial_async_env()
 end
 
 local function get_async_env()
-	local env = modtest.api.async_env
+	local env = api.async_env
 	if not env then
 		env = build_initial_async_env()
 	end
@@ -133,11 +132,11 @@ local function run_job_in_env(func, args)
 	return func(args)
 end
 
-function modtest.api.run_next_async_job()
-	local job = modtest.api.async_jobs:pop_front()
+function api.run_next_async_job()
+	local job = api.async_jobs:pop_front()
 	if job then
 		local job_id, func, args = unpack(job) -- also has mod_origin
 		local retval = run_job_in_env(func, args)
-		table.insert(modtest.api.async_results, { job_id, retval })
+		table.insert(api.async_results, { job_id, retval })
 	end
 end

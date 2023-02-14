@@ -1,0 +1,5 @@
+modtest.dofile("lua_api", "core", "player", "auth")
+modtest.dofile("lua_api", "core", "player", "ban")
+modtest.dofile("lua_api", "core", "player", "chat")
+modtest.dofile("lua_api", "core", "player", "player")
+modtest.dofile("lua_api", "core", "player", "sound")

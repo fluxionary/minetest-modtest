@@ -16,9 +16,6 @@ local log_levels = {
 	max = 7,
 }
 
--- internal log messages chan either be a string (from print()) or {level = level, message = message} (log())
-modtest.api.log_messages = modtest.Deque()
-
 function core.log(level, message)
 	if not message then
 		level, message = "none", message

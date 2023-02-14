@@ -1,10 +1,11 @@
 --[[
-	--builtin PATH/TO/builtin
-	--conf PATH/TO/minetest.conf
-	--world PATH/TO/world
-	--game PATH/TO/world
-	--mods PATH/TO/mods
-	mod_to_test
+	modtest
+	--builtin PATH/TO/builtin     # optional, but must be able to find it
+	--conf PATH/TO/minetest.conf  # optional
+	--game PATH/TO/game           # optional, defaults to our own "null game"
+	--mods PATH/TO/mods           # optional
+	--world PATH/TO/world         # optional, defaults to our own "empty_world"
+	mod_to_test					  # required
 ]]
 
 local f = string.format
@@ -74,6 +75,10 @@ local function parse_args(argv)
 		error(f("mod dir %q doesn't contain an init.lua file"))
 	end
 
+	if not file_exists(concat_path(args.mod_to_test, "mod.conf")) then
+		error(f("mod dir %q doesn't contain a mod.conf file"))
+	end
+
 	local home = os.getenv("HOME")
 	if not home or home == "" then
 		home = "."
@@ -100,7 +105,7 @@ local function parse_args(argv)
 		if directory_exists(concat_path(args.mod_to_test, "modtest", "world")) then
 			args.world = concat_path(args.mod_to_test, "modtest", "world")
 		else
-			error("you must specify a world w/ the --world option")
+			args.world = concat_path(modtest.our_path, "empty_world")
 		end
 	end
 
@@ -122,7 +127,7 @@ local function parse_args(argv)
 		elseif directory_exists(concat_path(home, ".minetest", "mods")) then
 			args.mods = concat_path(home, ".minetest", "mods")
 		end
-		-- mods are optional, so no error if the dir doesn't exist
+		-- mods dir is optional, so no error if the dir doesn't exist
 	end
 
 	if not args.game then
@@ -133,6 +138,8 @@ local function parse_args(argv)
 
 		if directory_exists(concat_path(args.mod_to_test, "modtest", game_id)) then
 			args.game = concat_path(args.mod_to_test, "modtest", game_id)
+		elseif directory_exists(concat_path(modtest.our_path, game_id)) then
+			args.game = concat_path(modtest.our_path, game_id)
 		elseif directory_exists(concat_path(home, ".minetest", "games", game_id)) then
 			args.game = concat_path(home, ".minetest", "games", game_id)
 		elseif directory_exists(concat_path("/usr/share/minetest/games", game_id)) then
@@ -160,3 +167,4 @@ local function parse_args(argv)
 end
 
 modtest.args = parse_args(arg)
+arg = {}

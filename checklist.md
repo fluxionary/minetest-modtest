@@ -522,10 +522,16 @@ what has been implemented, even as a stub:
 
   * player
     * auth
-      * [ ] check_password_entry
-      * [ ] get_password_hash
-      * [ ] notify_authentication_modified
-      * [ ] remove_player
+      * [x] auth.create
+      * [x] auth.delete
+      * [x] auth.list_names
+      * [x] auth.read
+      * [x] auth.reload
+      * [x] auth.save
+      * [x] check_password_entry
+      * [x] get_password_hash
+      * [x] notify_authentication_modified
+      * [x] remove_player
     * ban
       * [ ] ban_player
       * [ ] get_ban_description
@@ -538,13 +544,13 @@ what has been implemented, even as a stub:
       * [ ] sound_fade
       * [ ] sound_play
       * [ ] sound_stop
-    * [ ] disconnect_player
-    * [ ] dynamic_add_media
+    * [x] disconnect_player
+    * [x] dynamic_add_media
     * [x] get_connected_players
     * [x] get_player_by_name
-    * [ ] get_player_information
-    * [ ] get_player_ip
-    * [ ] get_player_privs
+    * [x] get_player_information
+    * [x] get_player_ip
+    * [x] get_player_privs
     * [ ] show_formspec
 
   * rollback

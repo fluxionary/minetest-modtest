@@ -1,0 +1,8 @@
+modtest.dofile("lua_api", "core", "mapgen", "biome")
+modtest.dofile("lua_api", "core", "mapgen", "decoration")
+modtest.dofile("lua_api", "core", "mapgen", "mapgen")
+modtest.dofile("lua_api", "core", "mapgen", "noise", "init")
+modtest.dofile("lua_api", "core", "mapgen", "ore")
+modtest.dofile("lua_api", "core", "mapgen", "params")
+modtest.dofile("lua_api", "core", "mapgen", "schematic")
+modtest.dofile("lua_api", "core", "mapgen", "tree")

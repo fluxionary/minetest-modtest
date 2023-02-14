@@ -34,8 +34,6 @@ local enable_rollback_recording = core.settings:get_bool("enable_rollback_record
 
 local api = modtest.api
 
-api.map = {}
-
 function api.clear_map()
 	api.map = {}
 end

@@ -8,6 +8,8 @@ local this_script = arg[0]
 local our_path = this_script:match(f("^(.*)%s[^%s]+$", DIR_DELIM, DIR_DELIM)) or "."
 
 modtest = {
+  our_path = our_path,
+
 	log = function(level, messagefmt, ...)
 		local delta = 0
 		if type(level) == "table" then
@@ -29,16 +31,16 @@ function modtest.dofile(...)
 	return dofile(to_do)
 end
 
-function modtest.doexternal(...)
-	local to_do = table.concat({...}, DIR_DELIM) .. ".lua"
-	modtest.log({"debug", 1}, "doing %q", to_do)
-	return dofile(to_do)
-end
-
 function modtest.loadfile(...)
 	local to_load = table.concat({our_path, ...}, DIR_DELIM) .. ".lua"
 	modtest.log({"debug", 1}, "loading %q", to_load)
 	return loadfile(to_load)
+end
+
+function modtest.doexternal(...)
+	local to_do = table.concat({...}, DIR_DELIM) .. ".lua"
+	modtest.log({"debug", 1}, "doing %q", to_do)
+	return dofile(to_do)
 end
 
 modtest.dofile("util", "init")

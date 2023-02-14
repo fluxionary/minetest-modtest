@@ -1,0 +1,5 @@
+modtest.describe("run some tests in the modtest environment", function()
+	modtest.it("node is defined", function()
+		assert.is_not_nil(minetest.registered_nodes["example_mod:node"])
+	end)
+end)

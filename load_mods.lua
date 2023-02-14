@@ -90,7 +90,7 @@ end
 local function get_all_mod_paths()
 	local mod_paths = {}
 
-	-- first game
+	-- first null_game
 	get_mod_paths(modtest.args.game .. "/mods", mod_paths, true)
 	-- the mods folder has to pay attention to what's in world.mt
 	get_mod_paths(modtest.args.mods, mod_paths, true, get_mod_filter())
@@ -156,5 +156,3 @@ function modtest.load_mods()
 		registered_on_mods_loaded[i]()
 	end
 end
-
-modtest.load_mods()

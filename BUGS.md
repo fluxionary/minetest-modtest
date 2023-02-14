@@ -14,3 +14,5 @@ in lua_api.txt
   * `hud_get_hotbar_selected_image` missing parens
 * environment access
   * `minetest.get_node_light(pos, timeofday)` should be `minetest.get_node_light(pos[, timeofday])`
+* minetest.get_player_information(player_name)
+  * missing `,` after `lang_code = "fr"`
