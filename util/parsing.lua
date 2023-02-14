@@ -292,7 +292,7 @@ end
 function util.load_settings(filename, defaults)
 	local settings
 	if defaults then
-		settings = table.copy(defaults)
+		settings = util.table_copy(defaults)
 	else
 		settings = {}
 	end

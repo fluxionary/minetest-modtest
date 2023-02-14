@@ -1,4 +1,4 @@
-PseudoRandom = modtest.util.class1
+PseudoRandom = modtest.util.class1()
 
 function PseudoRandom:_init()
 	error("TODO: implement")

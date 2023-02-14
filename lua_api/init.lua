@@ -66,9 +66,9 @@ function modtest.initialize_environment()
 	modtest.dofile("lua_api", "classes", "init")
 	modtest.dofile("lua_api", "core", "init")
 
-	api.initialize_all_state()
+	api.initialize_modtest_state()
 
-	INIT = "null_game"
+	INIT = "game"
 
 	modtest.doexternal(modtest.args.builtin, "init")
 end

@@ -41,3 +41,15 @@ function util.equals(a, b)
 
 	return size_a == size_b
 end
+
+function util.table_copy(t, seen)
+	local n = {}
+	seen = seen or {}
+	seen[t] = n
+	for k, v in pairs(t) do
+		n[(type(k) == "table" and (seen[k] or table.copy(k, seen))) or k] = (
+			type(v) == "table" and (seen[v] or table.copy(v, seen))
+		) or v
+	end
+	return n
+end

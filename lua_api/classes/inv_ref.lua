@@ -2,7 +2,7 @@ local f = string.format
 
 InvRef = modtest.util.class1()
 
-modtest.util.check_removed(ActiveObject)
+modtest.util.check_removed(InvRef)
 
 function InvRef:_init(location)
 	self._location = location

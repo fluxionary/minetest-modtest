@@ -3,7 +3,7 @@ local f = string.format
 local api = modtest.api
 
 function core.get_builtin_path()
-	return modtest.args.builtin
+	return modtest.args.builtin .. DIR_DELIM
 end
 
 function api.set_current_modname(name)

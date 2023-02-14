@@ -108,7 +108,7 @@ function core.dynamic_add_media()
 	-- this is just sending data to a client, ignore it
 end
 
-function core.get_api.connected_players()
+function core.connected_players()
 	local players = {}
 	for _, player in pairs(api.api.connected_players) do
 		table.insert(players, player)
