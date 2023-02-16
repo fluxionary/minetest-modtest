@@ -17,7 +17,7 @@ function api.create_player(player_name, password)
 	local auth_handler = core.get_auth_handler() -- create_auth
 	auth_handler.create_auth(player_name, password)
 
-	api.api.registered_players[player_name] = {
+	api.registered_players[player_name] = {
 		meta = PlayerMetaRef(),
 		inventory = InvRef({ type = "player", name = player_name }),
 		pitch = 0,
@@ -29,7 +29,7 @@ function api.create_player(player_name, password)
 end
 
 function api.try_join_player(name, password, connection_info)
-	if api.api.connected_players[name] then
+	if api.connected_players[name] then
 		return false, "already connected"
 	end
 
@@ -60,18 +60,18 @@ function api.try_join_player(name, password, connection_info)
 		return false, "unknown player"
 	end
 
-	if not core.check_password_entry(name, auth_handler.password, password) then
+	if not core.check_password_entry(name, auth_entry.password, password) then
 		return false, "invalid password"
 	end
 
-	local persistent_data = api.api.registered_players[name]
+	local persistent_data = api.registered_players[name]
 
 	local is_new_player = auth_entry.last_login == nil or auth_entry.last_login == -1
 
 	auth_handler.record_login(name)
 
 	local player = Player(name, connection_info, persistent_data)
-	api.api.connected_players[name] = player
+	api.connected_players[name] = player
 
 	if is_new_player then
 		for i = 1, #core.registered_on_newplayers do
@@ -82,6 +82,8 @@ function api.try_join_player(name, password, connection_info)
 	for i = 1, #core.registered_on_joinplayers do
 		core.registered_on_joinplayers[i](player)
 	end
+
+	return player
 end
 
 function core.disconnect_player(name, reason)
@@ -90,7 +92,7 @@ function core.disconnect_player(name, reason)
 		return false
 	end
 	player:_disconnect(false)
-	api.api.connected_players[name] = nil
+	api.connected_players[name] = nil
 	return true
 end
 
@@ -108,16 +110,16 @@ function core.dynamic_add_media()
 	-- this is just sending data to a client, ignore it
 end
 
-function core.connected_players()
+function core.get_connected_players()
 	local players = {}
-	for _, player in pairs(api.api.connected_players) do
+	for _, player in pairs(api.connected_players) do
 		table.insert(players, player)
 	end
 	return players
 end
 
 function core.get_player_by_name(name)
-	return api.api.connected_players[name]
+	return api.connected_players[name]
 end
 
 function core.get_player_information(player_name)

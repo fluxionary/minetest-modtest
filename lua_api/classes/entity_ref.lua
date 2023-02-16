@@ -3,7 +3,7 @@ EntityRef = modtest.util.class1(ObjectRef)
 modtest.util.check_removed(EntityRef)
 
 function EntityRef:_init(pos, name)
-	ObjectRef._init(pos)
+	ObjectRef._init(self, pos)
 	self._luaentity = { name = name }
 	core.luaentities[self._id] = self._luaentity
 	self._acceleration = vector.zero()

@@ -1,50 +1,42 @@
+local f = string.format
+
 local concat_path = modtest.util.concat_path
 local file_exists = modtest.util.file_exists
 
 local busted = require("busted.core")()
-local filterLoader = require("busted.modules.filter_loader")()
-local outputHandlerLoader = require("busted.modules.output_handler_loader")()
-
 require("busted")(busted)
 
-local luacov = require("luacov.runner")
-local luacov_defaults = require("luacov.defaults")
-local luacov_config = {}
+-- Set up randomization options
+busted.randomseed = os.time()
 
-modtest.util.set_all(luacov_config, luacov_defaults)
-modtest.util.set_all(luacov_config, {
-	includeuntestedfiles = true,
-	include = {},
-	exclude = {
-		"spec/",
-		"/%.?luarocks/",
-		"/share/lua/",
-		"busted_bootstrap$",
-		"busted%.",
-		"luassert%.",
-		"say%.",
-		"pl%.",
-	},
-})
-
-luacov(luacov_config)
-luacov.configuration = luacov_config
+--local luacov = require("luacov.runner")
+--local luacov_defaults = require("luacov.defaults")
+--local luacov_config = {}
+--
+--modtest.util.set_all(luacov_config, luacov_defaults)
+--modtest.util.set_all(luacov_config, {
+--	includeuntestedfiles = true,
+--	include = {},
+--	exclude = {
+--		-- TODO what should be excluded?
+--		"spec/",
+--	},
+--})
+--
+--luacov(luacov_config)
+--luacov.configuration = luacov_config
 
 -- watch for test errors and failures
 local failures = 0
 local errors = 0
 
 busted.subscribe({ "error", "output" }, function(element, parent, message)
-	io.stderr:write(
-		(appName or "??") .. ": error: Cannot load output library: " .. element.name .. "\n" .. message .. "\n"
-	)
+	io.stderr:write(f("%s: error: Cannot load output library: %s\n%s\n", appName or "??", element.name, message))
 	return nil, true
 end)
 
 busted.subscribe({ "error", "helper" }, function(element, parent, message)
-	io.stderr:write(
-		(appName or "??") .. ": error: Cannot load helper script: " .. element.name .. "\n" .. message .. "\n"
-	)
+	io.stderr:write(f("%s: error: Cannot load helper script: %s\n%s\n", appName or "??", element.name, message))
 	return nil, true
 end)
 
@@ -64,11 +56,9 @@ busted.subscribe({ "failure" }, function(element, parent, message)
 	return nil, true
 end)
 
--- Set up randomization options
-busted.randomseed = os.time()
-
 -- Set up output handler to listen to events
-outputHandlerLoader(busted, "utfTerminal", {
+local output_handler_loader = require("busted.modules.output_handler_loader")()
+output_handler_loader(busted, "utfTerminal", {
 	defaultOutput = "utfTerminal",
 	enableSound = false,
 	verbose = true,
@@ -79,7 +69,8 @@ outputHandlerLoader(busted, "utfTerminal", {
 })
 
 -- Load tag and test filters
-filterLoader(busted, {
+local filter_loader = require("busted.modules.filter_loader")()
+filter_loader(busted, {
 	tags = nil,
 	excludeTags = nil,
 	filter = nil,
@@ -89,16 +80,73 @@ filterLoader(busted, {
 	suppressPending = false,
 })
 
+function modtest.build_environment()
+	local env = {
+		modtest = modtest,
+
+		assert = assert,
+		bit = bit,
+		collectgarbage = collectgarbage,
+		coroutine = coroutine,
+		debug = debug, -- todo limit
+		DIR_DELIM = DIR_DELIM,
+		dofile = dofile, -- todo limit
+		error = error,
+		getfenv = getfenv,
+		getmetatable = getmetatable,
+		io = io, -- todo limit
+		ipairs = ipairs,
+		jit = jit,
+		loadfile = loadfile, -- todo limit
+		load = load,
+		loadstring = loadstring,
+		math = math,
+		next = next,
+		os = os,
+		package = package,
+		pairs = pairs,
+		pcall = pcall,
+		print = print,
+		rawequal = rawequal,
+		rawget = rawget,
+		rawset = rawset,
+		require = require,
+		select = select,
+		setfenv = setfenv,
+		setmetatable = setmetatable,
+		string = string,
+		table = table,
+		tonumber = tonumber,
+		tostring = tostring,
+		type = type,
+		unpack = unpack,
+		_VERSION = _VERSION,
+		xpcall = xpcall,
+	}
+
+	env._G = env
+
+	setfenv(1, env)
+
+	modtest.initialize_environment()
+	modtest.load_mods()
+
+	local setup_file = concat_path(modtest.args.mod_to_test, "modtest", "init.lua")
+
+	if file_exists(setup_file) then
+		dofile(setup_file)
+	else
+		print("can't find setup file " .. setup_file)
+	end
+
+	return env
+end
+
+local environment = modtest.build_environment()
+
 function modtest.with_environment(description, callback)
 	return busted.api.insulate(description, function()
-		modtest.initialize_environment()
-		modtest.load_mods()
-
-		local setup_file = concat_path(modtest.args.mod_to_test, "modtest", "init.lus")
-
-		if file_exists(setup_file) then
-			dofile(setup_file)
-		end
+		setfenv(1, modtest.util.table_copy(environment))
 
 		return callback()
 	end)
@@ -123,7 +171,7 @@ execute(1, {
 
 busted.publish({ "exit" })
 
-require("luacov.runner").shutdown()
+--require("luacov.runner").shutdown()
 
 local exit = require("busted.compatibility").exit
 if failures > 0 or errors > 0 then

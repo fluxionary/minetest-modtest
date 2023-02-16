@@ -206,9 +206,15 @@ function Player:_init(name, connection_info, persistent_data)
 	self._wield_index = 1
 
 	self._timed_out = false
+
+	self._chat_log = {}
 end
 
 -- internal functions
+
+function Player:_receive_chat(message)
+	table.insert(self._chat_log, message)
+end
 
 function Player:_is_timed_out()
 	return self._timed_out
@@ -436,7 +442,7 @@ function Player:hud_get(id)
 end
 
 function Player:hud_set_flags(flags)
-	api.set_all(self._hud_flags, flags)
+	set_all(self._hud_flags, flags)
 end
 
 function Player:hud_get_flags()

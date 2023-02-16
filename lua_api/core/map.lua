@@ -40,7 +40,7 @@ end
 
 local Mapblock = modtest.util.class1()
 
-function Mapblock._init(blockpos)
+function Mapblock:_init(blockpos)
 	self.blockpos = blockpos
 
 	for x = 1, 16 do

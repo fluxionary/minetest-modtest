@@ -27,7 +27,7 @@ function core.register_item_raw(itemdef)
 			if not next_content_id then
 				error("ran out of available node ids")
 			else
-				api.available_content_ids = nil
+				api.available_content_ids[next_content_id] = nil
 			end
 		end
 	end

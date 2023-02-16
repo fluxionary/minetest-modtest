@@ -43,13 +43,26 @@ function util.equals(a, b)
 end
 
 function util.table_copy(t, seen)
-	local n = {}
-	seen = seen or {}
-	seen[t] = n
-	for k, v in pairs(t) do
-		n[(type(k) == "table" and (seen[k] or table.copy(k, seen))) or k] = (
-			type(v) == "table" and (seen[v] or table.copy(v, seen))
-		) or v
+	if type(t) ~= "table" then
+		return t
 	end
-	return n
+	seen = seen or {}
+	local t_copy = {}
+	seen[t] = t_copy
+	for k in pairs(t) do
+		local v = rawget(t, k)
+
+		if type(k) == "table" then
+			k = seen[k] or util.table_copy(k, seen)
+		end
+		if type(v) == "table" then
+			v = seen[v] or util.table_copy(v, seen)
+		end
+
+		rawset(t_copy, k, v)
+	end
+
+	setmetatable(t_copy, util.table_copy(getmetatable(t)))
+
+	return t_copy
 end

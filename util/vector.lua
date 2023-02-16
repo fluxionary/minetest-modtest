@@ -40,3 +40,13 @@ function util.volume(p1, p2)
 	p1, p2 = vector.sort(p1, p2)
 	return (p2.x - p1.x + 1) * (p2.y - p1.y + 1) * (p2.z - p1.z + 1)
 end
+
+local mapblock_size = 16
+
+function util.get_blockpos(pos)
+	return vector.new(
+		math.floor(pos.x / mapblock_size),
+		math.floor(pos.y / mapblock_size),
+		math.floor(pos.z / mapblock_size)
+	)
+end

@@ -45,7 +45,9 @@ function core.log(level, message)
 end
 
 -- this is used by the builtin code to override _G.print
+local print = _G.print
 function core.print(message)
+	print(message)
 	modtest.api.log_messages:push_back(message or "")
 	if debug_log_size_max and debug_log_size_max > 0 then
 		while modtest.api.log_messages:size() > debug_log_size_max do

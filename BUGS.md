@@ -3,6 +3,8 @@ in modtest itself
 
 consider modtest non-functional until this comment is removed.
 
+* need to implement io restrictions properly-ish
+* need to figure out how to restrict "print" properly w/out it breaking busted's output
 
 in lua_api.txt
 --------------
