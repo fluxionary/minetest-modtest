@@ -3,7 +3,7 @@ NodeMetaRef = modtest.util.class1(MetaDataRef)
 modtest.util.check_removed(NodeMetaRef)
 
 function NodeMetaRef:_init(pos)
-	MetaDataRef.__init(self)
+	MetaDataRef._init(self)
 	self._pos = pos
 	self._inventory = InvRef({ type = "node", pos = pos })
 	self._private = {}
@@ -30,7 +30,7 @@ end
 
 function NodeMetaRef:set_string(key, value)
 	MetaDataRef.set_string(self, key, value)
-	if self._table[key] == nil then
+	if self._contents[key] == nil then
 		self._private[key] = nil
 	end
 end

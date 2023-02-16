@@ -6,15 +6,11 @@ function api.create_player(player_name, password)
 	if api.registered_players[player_name] then
 		error(f("player %q already exists, this is likely an error", player_name))
 	end
-	-- TODO check blank passwords if applicable
-	local static_spawnpoint = core.settings:get("static_spawnpoint")
-	if static_spawnpoint then
-		static_spawnpoint = core.string_to_pos(static_spawnpoint)
-	else
-		static_spawnpoint = vector.zero()
-	end
+
+	local static_spawnpoint = core.string_to_pos(core.settings:get("static_spawnpoint")) or vector.zero()
 
 	local auth_handler = core.get_auth_handler() -- create_auth
+	-- TODO check blank passwords if applicable
 	auth_handler.create_auth(player_name, password)
 
 	api.registered_players[player_name] = {
@@ -70,6 +66,7 @@ function api.try_join_player(name, password, connection_info)
 
 	auth_handler.record_login(name)
 
+	assert(vector.check(persistent_data.pos), dump(persistent_data))
 	local player = Player(name, connection_info, persistent_data)
 	api.connected_players[name] = player
 
@@ -99,7 +96,7 @@ end
 function api.time_out_player(name)
 	local player = core.get_player_by_name(name)
 	if not player then
-		api.warn(f("attempt to time-out a player %q who isn't connected", name))
+		modtest.warn(f("attempt to time-out a player %q who isn't connected", name))
 		return false
 	end
 	player:_time_out()

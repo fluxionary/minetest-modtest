@@ -65,8 +65,11 @@ function MetaDataRef:to_table()
 end
 
 function MetaDataRef:from_table(t)
-	assert(type(t) == "table" and type(t.fields) == "table")
-	self._contents = table.copy(t.fields)
+	if type(t) == "table" and type(t.fields) == "table" then
+		self._contents = table.copy(t.fields)
+	else
+		self._contents = {}
+	end
 end
 
 function MetaDataRef:equals(other)

@@ -4,8 +4,9 @@ function util.memoize1(func)
 	local memo = {}
 	return function(arg)
 		if arg == nil then
-			return func(arg)
+			return func()
 		end
+
 		local rv = memo[arg]
 
 		if not rv then

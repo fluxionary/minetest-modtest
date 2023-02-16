@@ -41,6 +41,12 @@ function util.volume(p1, p2)
 	return (p2.x - p1.x + 1) * (p2.y - p1.y + 1) * (p2.z - p1.z + 1)
 end
 
+function util.vector_in_bounds(v_min, v, v_max)
+	return util.in_bounds(v_min.x, v.x, v_max.x)
+		and util.in_bounds(v_min.y, v.y, v_max.y)
+		and util.in_bounds(v_min.z, v.z, v_max.z)
+end
+
 local mapblock_size = 16
 
 function util.get_blockpos(pos)

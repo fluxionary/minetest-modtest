@@ -4,12 +4,14 @@ modtest.util.check_removed(EntityRef)
 
 function EntityRef:_init(pos, name)
 	ObjectRef._init(self, pos)
-	self._luaentity = { name = name }
+	self._luaentity = { name = name, object = self }
 	core.luaentities[self._id] = self._luaentity
 	self._acceleration = vector.zero()
 	self._rotation = vector.zero()
 	self._texture_mod = ""
-	modtest.util.set_all(self._luaentity, core.registered_entities[name].initial_properties)
+	local entity_def = core.registered_entities[name]
+	modtest.warn_on(not entity_def, "initializing unknown entity %s", name)
+	modtest.util.set_all(self._luaentity, entity_def.initial_properties or {})
 end
 
 function EntityRef:remove()

@@ -36,7 +36,7 @@ function core.get_objects_in_area(pos1, pos2)
 	local minp, maxp = vector.sort(pos1, pos2)
 	local objects = {}
 	for _, obj in pairs(core.object_refs) do
-		if modtest.util.in_bounds(minp, obj:get_pos(), maxp) then
+		if modtest.util.vector_in_bounds(minp, obj:get_pos(), maxp) then
 			objects[#objects + 1] = obj
 		end
 	end

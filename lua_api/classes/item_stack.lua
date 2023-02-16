@@ -3,6 +3,10 @@ local f = string.format
 ItemStack = modtest.util.class1()
 
 local function parse_itemstring(itemstring)
+	if itemstring:match("^%s*$") then
+		return "", 0, 0, ItemStackMetaRef()
+	end
+
 	local name, count, wear, meta
 	name, count, wear, meta = itemstring:match("^(%S+) (%d+) (%d+) (.*$)$")
 	if not (name and count and wear and meta) then
@@ -184,13 +188,13 @@ function ItemStack:clear()
 	self._name = ""
 	self._count = 0
 	self._wear = 0
-	self._meta.from_table()
+	self._meta:from_table()
 end
 
 function ItemStack:replace(item)
 	if type(item) == "string" then
 		self._name, self._count, self._wear = parse_itemstring(item)
-		self._meta.from_table()
+		self._meta:from_table()
 	elseif type(item) == "table" then
 		if item._name and item._count and item._wear then
 			self._name = item._name
@@ -201,7 +205,7 @@ function ItemStack:replace(item)
 			self._name = item.name or ""
 			self._count = item.count or 1
 			self._wear = item.wear or 0
-			self._meta.from_table()
+			self._meta:from_table()
 		end
 	else
 		error("invalid argument")
@@ -316,6 +320,7 @@ function ItemStack:item_fits(item)
 end
 
 function ItemStack:take_item(n)
+	n = n or 1
 	local to_take = math.min(self._count, n)
 	local remaining = self._count - to_take
 	local to_return = ItemStack(self)

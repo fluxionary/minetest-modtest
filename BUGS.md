@@ -5,6 +5,8 @@ consider modtest non-functional until this comment is removed.
 
 * need to implement io restrictions properly-ish
 * need to figure out how to restrict "print" properly w/out it breaking busted's output
+* the architecture probably needs a bit of a refactor before i get too much further. we're at the point where
+  the location of some code seems partially arbitrary.
 
 in lua_api.txt
 --------------

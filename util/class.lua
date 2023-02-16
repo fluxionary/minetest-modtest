@@ -27,7 +27,7 @@ function util.check_removed(class)
 		if type(value) == "function" and key:sub(1, 1) ~= "_" then
 			return function(self2, ...)
 				if self2._removed then
-					modtest.api.warn("called on removed")
+					modtest.warn("called on removed")
 					return
 				end
 				return value(self2, ...)

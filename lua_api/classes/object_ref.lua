@@ -5,6 +5,7 @@ modtest.util.check_removed(ObjectRef)
 local next_object_id = 1
 
 function ObjectRef:_init(pos)
+	assert(vector.check(pos))
 	self._id, next_object_id = next_object_id, next_object_id + 1
 	core.object_refs[self._id] = self
 	self._pos = pos
@@ -174,319 +175,319 @@ end
 -- Lua entity only (no-op for other objects)
 
 function ObjectRef:remove()
-	modtest.api.warn("called on non-luaentity")
+	modtest.warn("called on non-luaentity")
 end
 
 function ObjectRef:set_velocity(vel)
-	modtest.api.warn("called on non-luaentity")
+	modtest.warn("called on non-luaentity")
 end
 
 function ObjectRef:set_acceleration(acc)
-	modtest.api.warn("called on non-luaentity")
+	modtest.warn("called on non-luaentity")
 end
 
 function ObjectRef:get_acceleration()
-	modtest.api.warn("called on non-luaentity")
+	modtest.warn("called on non-luaentity")
 end
 
 function ObjectRef:set_rotation(rot)
-	modtest.api.warn("called on non-luaentity")
+	modtest.warn("called on non-luaentity")
 end
 
 function ObjectRef:get_rotation()
-	modtest.api.warn("called on non-luaentity")
+	modtest.warn("called on non-luaentity")
 end
 
 function ObjectRef:set_yaw(yaw)
-	modtest.api.warn("called on non-luaentity")
+	modtest.warn("called on non-luaentity")
 end
 
 function ObjectRef:get_yaw()
-	modtest.api.warn("called on non-luaentity")
+	modtest.warn("called on non-luaentity")
 end
 
 function ObjectRef:set_texture_mod(mod)
-	modtest.api.warn("called on non-luaentity")
+	modtest.warn("called on non-luaentity")
 end
 
 function ObjectRef:get_texture_mod()
-	modtest.api.warn("called on non-luaentity")
+	modtest.warn("called on non-luaentity")
 end
 
 function ObjectRef:set_sprite(start_frame, num_frames, framelength, select_x_by_camera)
-	modtest.api.warn("called on non-luaentity")
+	modtest.warn("called on non-luaentity")
 end
 
 function ObjectRef:get_entity_name()
-	modtest.api.warn("called on non-luaentity")
+	modtest.warn("called on non-luaentity")
 	core.log("deprecated", "ObjectRef:get_entity_name()")
 end
 
 function ObjectRef:get_luaentity()
-	modtest.api.warn("called on non-luaentity")
+	modtest.warn("called on non-luaentity")
 end
 
 -- Player only (no-op for other objects)
 
 function ObjectRef:get_player_name()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	return ""
 end
 
 function ObjectRef:get_player_velocity()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	core.log("deprecated", "ObjectRef:get_player_velocity()")
 	return vector.zero()
 end
 
 function ObjectRef:add_player_velocity(vel)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	core.log("deprecated", "ObjectRef:add_player_velocity(vel)")
 end
 
 function ObjectRef:get_look_dir()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_look_vertical()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_look_horizontal()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_look_vertical(radians)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_look_horizontal(radians)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_look_pitch()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	core.log("deprecated", "ObjectRef:get_look_pitch()")
 end
 
 function ObjectRef:get_look_yaw()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	core.log("deprecated", "ObjectRef:get_look_yaw()")
 end
 
 function ObjectRef:set_look_pitch(radians)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	core.log("deprecated", "ObjectRef:set_look_pitch(radians)")
 end
 
 function ObjectRef:set_look_yaw(radians)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	core.log("deprecated", "ObjectRef:set_look_yaw(radians)")
 end
 
 function ObjectRef:get_breath()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_breath(value)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_fov(fov, is_multiplier, transition_time)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_fov()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_attribute(attribute, value)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	core.log("deprecated", "ObjectRef:set_attribute(attribute, value)")
 end
 
 function ObjectRef:get_attribute(attribute)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	core.log("deprecated", "ObjectRef:get_attribute(attribute)")
 end
 
 function ObjectRef:get_meta()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_inventory_formspec(formspec)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_inventory_formspec()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_formspec_prepend(formspec)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_formspec_prepend(formspec)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_player_control()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	return {}
 end
 
 function ObjectRef:get_player_control_bits()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	return 0
 end
 
 function ObjectRef:set_physics_override(override_table)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_physics_override()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:hud_add(def)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:hud_remove(id)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:hud_change(id, stat, value)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:hud_get(id)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:hud_set_flags(flags)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:hud_get_flags()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:hud_set_hotbar_itemcount(count)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:hud_get_hotbar_itemcount()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:hud_set_hotbar_image(texturename)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:hud_get_hotbar_image()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:hud_set_hotbar_selected_image(texturename)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:hud_get_hotbar_selected_image()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_minimap_modes(modes, selected_mode)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_sky(sky_parameters, type, textures, clouds)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	if type or textures or clouds then
 		core.log("deprecated", "ObjectRef:set_sky(color, type, textures, clouds)")
 	end
 end
 
 function ObjectRef:get_sky(as_table)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	if as_table ~= true then
 		core.log("deprecated", "ObjectRef:get_sky()")
 	end
 end
 
 function ObjectRef:get_sky_color()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 	core.log("deprecated", "ObjectRef:get_sky_color()")
 end
 
 function ObjectRef:set_sun(sun_parameters)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_sun()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_moon(moon_parameters)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_moon()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_stars(star_parameters)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_stars()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_clouds(cloud_parameters)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_clouds()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:override_day_night_ratio(ratio)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_day_night_ratio()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_local_animation(idle, walk, dig, walk_while_dig, frame_speed)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_local_animation()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_eye_offset(firstperson, thirdperson)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_eye_offset()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:send_mapblock(blockpos)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:set_lighting(light_definition)
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:get_lighting()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end
 
 function ObjectRef:respawn()
-	modtest.api.warn("called on non-player")
+	modtest.warn("called on non-player")
 end

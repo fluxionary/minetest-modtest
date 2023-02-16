@@ -7,8 +7,10 @@ DIR_DELIM = "/"  -- TODO possibly support other things
 local this_script = arg[0]
 local our_path = this_script:match(f("^(.*)%s[^%s]+$", DIR_DELIM, DIR_DELIM)) or "."
 
+local debug, dofile, io, loadfile, table, type, unpack = debug, dofile, io, loadfile, table, type, unpack
+
 modtest = {
-  our_path = our_path,
+	our_path = our_path,
 
 	log = function(level, messagefmt, ...)
 		local delta = 0
@@ -22,24 +24,34 @@ modtest = {
 
 		io.write(msg)
 		io.flush()
-	end
+	end,
+
+	warn = function(messagefmt, ...)
+		modtest.log({ "warning", 1 }, messagefmt, ...)
+	end,
+
+	warn_on = function(condition, messagefmt, ...)
+		if condition then
+			modtest.log({"warning", 1}, messagefmt, ...)
+		end
+	end,
 }
 
 function modtest.dofile(...)
-	local to_do = table.concat({our_path, ...}, DIR_DELIM) .. ".lua"
-	modtest.log({"debug", 1}, "doing %q", to_do)
+	local to_do = table.concat({ our_path, ... }, DIR_DELIM) .. ".lua"
+	modtest.log({ "debug", 1 }, "doing %q", to_do)
 	return dofile(to_do)
 end
 
 function modtest.loadfile(...)
-	local to_load = table.concat({our_path, ...}, DIR_DELIM) .. ".lua"
-	modtest.log({"debug", 1}, "loading %q", to_load)
+	local to_load = table.concat({ our_path, ... }, DIR_DELIM) .. ".lua"
+	modtest.log({ "debug", 1 }, "loading %q", to_load)
 	return loadfile(to_load)
 end
 
 function modtest.doexternal(...)
-	local to_do = table.concat({...}, DIR_DELIM) .. ".lua"
-	modtest.log({"debug", 1}, "doing %q", to_do)
+	local to_do = table.concat({ ... }, DIR_DELIM) .. ".lua"
+	modtest.log({ "debug", 1 }, "doing %q", to_do)
 	return dofile(to_do)
 end
 

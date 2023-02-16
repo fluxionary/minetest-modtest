@@ -11,7 +11,7 @@ function modtest.api.trigger_globalstep()
 		modtest.api.max_lag = dtime
 	end
 
-	-- TODO:
+	-- TODO: wait before disconnecting?
 	for _, player in core.get_connected_players() do
 		if player:_is_timed_out() then
 			player:_disconnect()

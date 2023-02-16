@@ -421,7 +421,7 @@ function Player:hud_remove(id)
 	if self._huds[id] then
 		self._huds[id] = nil
 	else
-		api.warn("attempt to remove non-existent HUD")
+		modtest.warn("attempt to remove non-existent HUD")
 	end
 end
 
@@ -430,7 +430,7 @@ function Player:hud_change(id, stat, value)
 	if hud then
 		hud[stat] = value
 	else
-		api.warn("attempt to change non-existent HUD")
+		modtest.warn("attempt to change non-existent HUD")
 	end
 end
 
@@ -508,12 +508,12 @@ function Player:set_sky(sky_parameters, type, textures, clouds)
 	if is_valid_colorspec(sky_parameters.base_color) then
 		sky_parameters.base_color = normalize_colorspec(sky_parameters.base_color)
 	else
-		api.warn("invalid colorspec, ignoring")
+		modtest.warn("invalid colorspec, ignoring")
 		sky_parameters.base_color = nil
 	end
 
 	if sky_parameters.type ~= "regular" and sky_parameters.type ~= "skybox" and sky_parameters.type ~= "plain" then
-		api.warn("invalid skybox type, ignoring")
+		modtest.warn("invalid skybox type, ignoring")
 		sky_parameters.type = nil
 	end
 

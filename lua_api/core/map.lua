@@ -2,7 +2,7 @@ local f = string.format
 
 local m_floor = math.floor
 
-local t_copy = table.copy
+local t_copy = modtest.util.table_copy
 
 -- NOTICE: we cannot cache vector methods because they don't exist yet
 
@@ -43,11 +43,11 @@ local Mapblock = modtest.util.class1()
 function Mapblock:_init(blockpos)
 	self.blockpos = blockpos
 
-	for x = 1, 16 do
+	for x = 0, 15 do
 		local panel = {}
-		for y = 1, 16 do
+		for y = 0, 15 do
 			local column = {}
-			for z = 1, 16 do
+			for z = 0, 15 do
 				column[z] = {
 					name = "air",
 					param1 = 0,
@@ -68,11 +68,17 @@ end
 
 function Mapblock:get_node(pos)
 	local relative = pos - (self.blockpos * 16)
+	assert(0 <= relative.x and relative.x <= 15)
+	assert(0 <= relative.y and relative.y <= 15)
+	assert(0 <= relative.z and relative.z <= 15)
 	return self[relative.x][relative.y][relative.z]
 end
 
 function Mapblock:set_node(pos, node)
 	local relative = pos - (self.blockpos * 16)
+	assert(0 <= relative.x and relative.x <= 15)
+	assert(0 <= relative.y and relative.y <= 15)
+	assert(0 <= relative.z and relative.z <= 15)
 	self[relative.x][relative.y][relative.z] = node
 end
 
@@ -125,7 +131,7 @@ end
 function Mapblock:remove_timer(pos)
 	local index = core.hash_node_position(pos)
 	local timer = self.timers[index]
-	if not timer then
+	if timer then
 		timer:_remove() -- TODO probably a NodeTimerRef can meaningfully persist after a node has been reset, so this is wrong
 		self.timers[index] = nil
 	end
@@ -134,7 +140,7 @@ end
 function api.get_mapblock(blockpos)
 	local index = core.hash_node_position(blockpos)
 	local mapblock = api.map[index]
-	if mapblock.loaded then
+	if mapblock and mapblock.loaded then
 		return mapblock
 	end
 end
@@ -192,10 +198,13 @@ function api.deactivate_mapblock(blockpos)
 end
 
 local function validate_pos(pos)
-	assert(vector.check(pos), "position must be a vector")
-	api.warn_on(not vector.equals(pos, vector.floor(pos)), "coordinates of position are not integers")
-	api.warn_on(not in_world_bounds(pos), "pos is outside of world")
-	return vector.floor(pos)
+	if not (vector.check(pos) or (pos and pos.x and pos.y and pos.z)) then
+		error("position must be a vector")
+	end
+	local f_pos = vector.floor(pos)
+	modtest.warn_on(not vector.equals(pos, f_pos), "coordinates of position are not integers")
+	modtest.warn_on(not in_world_bounds(f_pos), "pos is outside of world")
+	return f_pos
 end
 
 local function validate_node(node)
@@ -587,7 +596,7 @@ function core.get_natural_light(pos, timeofday)
 
 	if timeofday then
 		assert(type(timeofday) == "number")
-		api.warn_on(timeofday < 0 or timeofday > 1, "timeofday should be between 0 and 1")
+		modtest.warn_on(timeofday < 0 or timeofday > 1, "timeofday should be between 0 and 1")
 		timeofday = (24000 * (timeofday % 1))
 	else
 		timeofday = core.get_timeofday()
@@ -644,6 +653,10 @@ function core.get_voxel_manip(pos1, pos2)
 	return VoxelManip(pos1, pos2)
 end
 
+local function v_ceil(v)
+	return vector.new(math.ceil(v.x), math.ceil(v.y), math.ceil(v.z))
+end
+
 function core.load_area(pos1, pos2)
 	pos1 = validate_pos(pos1)
 	if pos2 then
@@ -653,7 +666,7 @@ function core.load_area(pos1, pos2)
 	end
 	pos1, pos2 = vector.sort(pos1, pos2)
 	local bp_min = vector.floor(pos1 / 16)
-	local bp_max = vector.ceil(pos2 / 16)
+	local bp_max = v_ceil(pos2 / 16)
 	for blockpos in iterate_area(bp_min, bp_max) do
 		api.load_mapblock(blockpos)
 	end
