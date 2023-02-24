@@ -1,6 +1,7 @@
 modtest.util = {}
 
 modtest.dofile("util", "class")
+modtest.dofile("util", "deepcopy")
 modtest.dofile("util", "deque") -- must come after "class"
 modtest.dofile("util", "math")
 modtest.dofile("util", "memoize")

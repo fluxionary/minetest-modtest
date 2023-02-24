@@ -11,6 +11,8 @@ consider modtest non-functional until this comment is removed.
 in lua_api.txt
 --------------
 
+https://github.com/minetest/minetest/pull/13240
+
 * active object reference
   * `get_formspec_prepend(formspec)` -- doesn't actually take an argument
   * `hud_get_hotbar_itemcount` missing parens

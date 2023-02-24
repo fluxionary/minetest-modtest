@@ -1,6 +1,7 @@
 local f = string.format
 
 local concat_path = modtest.util.concat_path
+local deepcopy = modtest.util.deepcopy
 local file_exists = modtest.util.file_exists
 
 local busted = require("busted.core")()
@@ -128,27 +129,29 @@ function modtest.build_environment()
 
 	setfenv(1, env)
 
-	modtest.initialize_environment()
-	modtest.load_mods()
+	local state = modtest.initialize_environment()
+	env.state = state
+	modtest.load_mods(state)
 
-	local setup_file = concat_path(modtest.args.mod_to_test, "modtest", "init.lua")
+	local setup = modtest.loadexternal(modtest.args.mod_to_test, "modtest", "init")
 
-	if file_exists(setup_file) then
-		dofile(setup_file)
+	if setup then
+		setup(state)
 	else
-		print("can't find setup file " .. setup_file)
+		modtest.log("debug", "can't find setup file " .. concat_path(modtest.args.mod_to_test, "modtest", "init.lua"))
 	end
 
 	return env
 end
 
-local environment = modtest.build_environment()
+--local environment = modtest.build_environment()
 
 function modtest.with_environment(description, callback)
 	return busted.api.insulate(description, function()
-		setfenv(1, modtest.util.table_copy(environment))
+		local env = modtest.build_environment()
+		setfenv(1, env)
 
-		return callback()
+		return callback(env.state)
 	end)
 end
 

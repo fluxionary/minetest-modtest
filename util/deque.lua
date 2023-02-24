@@ -85,4 +85,4 @@ function Deque:clear()
 	self._z = -1
 end
 
-modtest.Deque = Deque
+modtest.util.Deque = Deque

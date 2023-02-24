@@ -38,16 +38,16 @@ local function get_mod_name(modpath)
 	return modpath:match(f("^.-%s([^%s]+)$", DIR_DELIM))
 end
 
-local function load_mod(mod_name, all_modpaths)
+local function load_mod(state, mod_name, all_modpaths)
 	local modpath = all_modpaths[mod_name]
 	local init_file = concat_path(modpath, "init.lua")
 	if not file_exists(init_file) then
 		error(("could not find %q?"):format(init_file))
 	end
 	modtest.log({ "debug", 1 }, "loading mod %q from %q", mod_name, modpath)
-	modtest.api.set_current_modname(mod_name)
+	state:set_current_modname(mod_name)
 	dofile(init_file)
-	modtest.api.set_current_modname(nil)
+	state:set_current_modname(nil)
 end
 
 local function get_mod_paths(mod_folder, mod_paths, is_root, filter)
@@ -103,7 +103,7 @@ local function get_all_mod_paths()
 	return mod_paths
 end
 
-local function resolve_mod(mod_name, resolved, unresolved, all_modpaths)
+local function resolve_mod(state, mod_name, resolved, unresolved, all_modpaths)
 	local depends, optional_depends = get_depends(mod_name, all_modpaths)
 	if not depends then
 		return false
@@ -117,7 +117,7 @@ local function resolve_mod(mod_name, resolved, unresolved, all_modpaths)
 				error(f("dependency cycle detected: %q -> %q", mod_name, depend))
 			end
 
-			if not resolve_mod(depend, resolved, unresolved, all_modpaths) then
+			if not resolve_mod(state, depend, resolved, unresolved, all_modpaths) then
 				error(f("missing dependency %q for mod %q", depend, mod_name))
 			end
 		end
@@ -129,11 +129,11 @@ local function resolve_mod(mod_name, resolved, unresolved, all_modpaths)
 				error(f("dependency cycle detected: %q -> %q"):format(mod_name, depend))
 			end
 
-			resolve_mod(depend, resolved, unresolved, all_modpaths)
+			resolve_mod(state, depend, resolved, unresolved, all_modpaths)
 		end
 	end
 
-	load_mod(mod_name, all_modpaths)
+	load_mod(state, mod_name, all_modpaths)
 
 	resolved[mod_name] = true
 	unresolved[mod_name] = nil
@@ -141,13 +141,13 @@ local function resolve_mod(mod_name, resolved, unresolved, all_modpaths)
 	return true
 end
 
-function modtest.load_mods()
+function modtest.load_mods(state)
 	local all_modpaths = get_all_mod_paths()
-	modtest.api.set_all_modpaths(all_modpaths)
+	state:set_all_modpaths(all_modpaths)
 
 	local to_test_name = get_mod_name(modtest.args.mod_to_test)
 
-	resolve_mod(to_test_name, {}, {}, all_modpaths)
+	resolve_mod(state, to_test_name, {}, {}, all_modpaths)
 
 	modtest.log("debug", "mods loaded")
 

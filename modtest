@@ -55,10 +55,16 @@ function modtest.doexternal(...)
 	return dofile(to_do)
 end
 
+function modtest.loadexternal(...)
+	local to_do = table.concat({ ... }, DIR_DELIM) .. ".lua"
+	modtest.log({ "debug", 1 }, "doing %q", to_do)
+	return loadfile(to_do)
+end
+
 modtest.dofile("util", "init")
 modtest.dofile("parse_args")
 
-modtest.dofile("lua_api", "init")
+modtest.dofile("minetest_api", "init")
 
 modtest.dofile("load_mods")
 
