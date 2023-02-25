@@ -42,7 +42,9 @@ function core.log(level, message)
 		state.log_messages:push_back({ level = level, message = message })
 	end
 	local log_message = f("[%s] %s", level:upper(), message)
-	print(log_message)
+	if modtest.debug then
+		print(log_message)
+	end
 	if log_levels[level] <= log_levels[chat_log_level] then
 		core.chat_send_all(log_message)
 	end

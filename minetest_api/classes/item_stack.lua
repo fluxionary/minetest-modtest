@@ -195,8 +195,7 @@ end
 
 function ItemStack:replace(item)
 	if type(item) == "string" then
-		self._name, self._count, self._wear = parse_itemstring(item)
-		self._meta:from_table()
+		self._name, self._count, self._wear, self._meta = parse_itemstring(item)
 	elseif type(item) == "table" then
 		if item._name and item._count and item._wear then
 			self._name = item._name
@@ -306,8 +305,14 @@ function ItemStack:add_wear_by_uses(max_uses)
 end
 
 function ItemStack:add_item(item)
+	if self:is_empty() then
+		self:replace(item)
+		return ItemStack()
+	end
+
 	item = ItemStack(item)
-	if (self._name ~= item._name and item._name ~= "") or self._wear ~= item._wear or self._meta ~= item._meta then
+
+	if self._name ~= item._name or self._wear ~= item._wear or self._meta ~= item._meta then
 		return item
 	end
 

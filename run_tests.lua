@@ -144,10 +144,18 @@ function modtest.build_environment()
 	return env
 end
 
---local environment = modtest.build_environment()
+local environment = modtest.build_environment()
 
-function modtest.with_environment(description, callback)
-	return busted.api.insulate(description, function()
+function modtest.with_dirty_environment(callback)
+	return busted.api.insulate("", function()
+		setfenv(1, environment)
+
+		return callback(environment.state)
+	end)
+end
+
+function modtest.with_fresh_environment(callback)
+	return busted.api.insulate("", function()
 		local env = modtest.build_environment()
 		setfenv(1, env)
 
@@ -178,5 +186,5 @@ busted.publish({ "exit" })
 
 local exit = require("busted.compatibility").exit
 if failures > 0 or errors > 0 then
-	exit(failures + errors, forceExit)
+	exit(failures + errors)
 end

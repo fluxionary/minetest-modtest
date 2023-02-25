@@ -2,6 +2,8 @@ local state = ...
 
 local f = string.format
 
+local table_copy = modtest.util.table_copy
+
 InvRef = modtest.util.class1()
 
 modtest.util.check_removed(InvRef)
@@ -174,7 +176,7 @@ function InvRef:room_for_item(listname, stack)
 	end
 
 	stack = ItemStack(stack)
-	local copy = table.copy(list)
+	local copy = table_copy(list)
 	for _, our_stack in ipairs(copy) do
 		stack = our_stack:add_item(stack)
 		if stack:is_empty() then
@@ -264,5 +266,5 @@ function InvRef:contains_item(listname, stack, match_meta)
 end
 
 function InvRef:get_location()
-	return table.copy(self._location)
+	return table_copy(self._location)
 end

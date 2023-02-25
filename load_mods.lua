@@ -44,7 +44,9 @@ local function load_mod(state, mod_name, all_modpaths)
 	if not file_exists(init_file) then
 		error(("could not find %q?"):format(init_file))
 	end
-	modtest.log({ "debug", 1 }, "loading mod %q from %q", mod_name, modpath)
+	if modtest.debug then
+		modtest.log({ "debug", 1 }, "loading mod %q from %q", mod_name, modpath)
+	end
 	state:set_current_modname(mod_name)
 	dofile(init_file)
 	state:set_current_modname(nil)
@@ -55,13 +57,17 @@ local function get_mod_paths(mod_folder, mod_paths, is_root, filter)
 	local found = false
 	for _, subdir in ipairs(subdirs) do
 		local mod_conf = subdir .. "/mod.conf"
-		modtest.log("debug", "looking for %s", mod_conf)
+		if modtest.debug then
+			modtest.log("debug", "looking for %s", mod_conf)
+		end
 		local modpack_conf = subdir .. "/modpack.conf"
 		if file_exists(mod_conf) then
 			local mod_name = get_mod_name(subdir)
 			if not filter or filter[mod_name] then
 				mod_paths[mod_name] = subdir
-				modtest.log("debug", "found mod %s in %s", mod_name, subdir)
+				if modtest.debug then
+					modtest.log("debug", "found mod %s in %s", mod_name, subdir)
+				end
 				found = true
 			end
 		elseif file_exists(modpack_conf) then
@@ -71,7 +77,9 @@ local function get_mod_paths(mod_folder, mod_paths, is_root, filter)
 		end
 	end
 	if not found then
-		modtest.log("debug", "no mods found in %s", mod_folder)
+		if modtest.debug then
+			modtest.log("debug", "no mods found in %s", mod_folder)
+		end
 	end
 	return found
 end
@@ -149,7 +157,9 @@ function modtest.load_mods(state)
 
 	resolve_mod(state, to_test_name, {}, {}, all_modpaths)
 
-	modtest.log("debug", "mods loaded")
+	if modtest.debug then
+		modtest.log("debug", "mods loaded")
+	end
 
 	local registered_on_mods_loaded = core.registered_on_mods_loaded
 	for i = 1, #registered_on_mods_loaded do

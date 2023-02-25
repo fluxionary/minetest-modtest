@@ -35,29 +35,39 @@ modtest = {
 			modtest.log({"warning", 1}, messagefmt, ...)
 		end
 	end,
+
+	debug = true, -- TODO: make this a parameter
 }
 
 function modtest.dofile(...)
 	local to_do = table.concat({ our_path, ... }, DIR_DELIM) .. ".lua"
-	modtest.log({ "debug", 1 }, "doing %q", to_do)
+	if modtest.debug then
+		modtest.log({ "debug", 1 }, "doing %q", to_do)
+	end
 	return dofile(to_do)
 end
 
 function modtest.loadfile(...)
 	local to_load = table.concat({ our_path, ... }, DIR_DELIM) .. ".lua"
-	modtest.log({ "debug", 1 }, "loading %q", to_load)
+	if modtest.debug then
+		modtest.log({ "debug", 1 }, "loading %q", to_load)
+	end
 	return loadfile(to_load)
 end
 
 function modtest.doexternal(...)
 	local to_do = table.concat({ ... }, DIR_DELIM) .. ".lua"
-	modtest.log({ "debug", 1 }, "doing %q", to_do)
+	if modtest.debug then
+		modtest.log({ "debug", 1 }, "doing %q", to_do)
+	end
 	return dofile(to_do)
 end
 
 function modtest.loadexternal(...)
 	local to_do = table.concat({ ... }, DIR_DELIM) .. ".lua"
-	modtest.log({ "debug", 1 }, "doing %q", to_do)
+	if modtest.debug then
+		modtest.log({ "debug", 1 }, "doing %q", to_do)
+	end
 	return loadfile(to_do)
 end
 

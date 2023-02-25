@@ -163,7 +163,6 @@ end
 ]]
 --
 function core.set_node(pos, node)
-	print(minetest.pos_to_string(pos), dump(node):gsub("%s+", ""))
 	pos = validate_pos(pos)
 	local new_def
 	node, new_def = validate_node(node)
