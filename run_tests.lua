@@ -82,7 +82,7 @@ filter_loader(busted, {
 })
 
 function modtest.build_environment()
-	local env = {
+	local run_env = {
 		modtest = modtest,
 
 		assert = assert,
@@ -125,41 +125,42 @@ function modtest.build_environment()
 		xpcall = xpcall,
 	}
 
-	env._G = env
+	run_env._G = run_env
 
-	setfenv(1, env)
+	setfenv(1, run_env)
 
 	local state = modtest.initialize_environment()
-	env.state = state
+	run_env.state = state
 	modtest.load_mods(state)
 
 	local setup = modtest.loadexternal(modtest.args.mod_to_test, "modtest", "init")
 
+	local test_env
 	if setup then
-		setup(state)
+		test_env = setup(state)
 	else
 		modtest.log("debug", "can't find setup file " .. concat_path(modtest.args.mod_to_test, "modtest", "init.lua"))
 	end
 
-	return env
+	return run_env, test_env
 end
 
-local environment = modtest.build_environment()
+local environment, test_env = modtest.build_environment()
 
 function modtest.with_dirty_environment(callback)
 	return busted.api.insulate("", function()
 		setfenv(1, environment)
 
-		return callback(environment.state)
+		return callback(environment.state, test_env)
 	end)
 end
 
 function modtest.with_fresh_environment(callback)
 	return busted.api.insulate("", function()
-		local env = modtest.build_environment()
-		setfenv(1, env)
+		local fresh_environment, fresh_test_env = modtest.build_environment()
+		setfenv(1, fresh_environment)
 
-		return callback(env.state)
+		return callback(fresh_environment.state, fresh_test_env)
 	end)
 end
 

@@ -25,7 +25,7 @@ function core.register_item_raw(itemdef)
 
 	if itemdef.type == "node" then
 		if not state.content_id_by_name[name] then
-			local content_id = state:get_next_content_id()
+			local content_id = state:_get_next_content_id()
 			state.content_id_by_name[name] = content_id
 			state.content_id_by_name[content_id] = name
 		end

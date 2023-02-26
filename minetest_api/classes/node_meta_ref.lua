@@ -39,11 +39,11 @@ end
 
 function NodeMetaRef:to_table()
 	local t = MetaDataRef.to_table(self)
-	t.inventory = self._inventory.to_table()
+	t.inventory = self._inventory:get_lists()
 	return t
 end
 
 function NodeMetaRef:from_table(t)
 	MetaDataRef.from_table(self, t)
-	self._inventory.from_table(t.inventory)
+	self._inventory.set_lists(t.inventory)
 end

@@ -1,0 +1,3 @@
+local state = ...
+
+modtest.loadfile("minetest_api", "internal", "map_block")(state)

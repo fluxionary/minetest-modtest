@@ -36,9 +36,19 @@ end, function(self, other)
 	self.available_unknown_content_ids = deepcopy(other.available_unknown_content_ids)
 end)
 
-function State:get_next_content_id()
+function State:_get_next_content_id()
 	local next_content_id = next(self.available_content_ids)
 	assert(next_content_id, "ran out of available node ids")
 	self.available_content_ids[next_content_id] = nil
 	return next_content_id
+end
+
+function State:_get_all_items_in_group(group)
+	local items = {}
+	for name, def in pairs(self.registered_item_raws) do
+		if (def.groups or {})[group] or 0 > 0 then
+			items[#items + 1] = name
+		end
+	end
+	return items
 end
